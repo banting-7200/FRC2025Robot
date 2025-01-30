@@ -1,8 +1,16 @@
+buildscript {
+    dependencies {
+        classpath files('gradle/plugins/gversion-plugin-1.10.3.7200.jar')
+    }
+}
+
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2025.2.1"
     id "com.diffplug.spotless" version "6.25.0"
 }
+
+apply plugin: 'com.peterabeles.gversion'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -149,4 +157,15 @@ spotless {
         indentWithSpaces(2)
         endWithNewline()
     }
+}
+
+// Add git information to Build
+project.compileJava.dependsOn(createVersionFile)
+gversion {
+    srcDir       = "src/main/java/"
+    classPackage = "frc.robot"
+    className    = "BuildConstants"
+    dateFormat   = "yyyy-MM-dd HH:mm:ss z"
+    timeZone     = "America/New_York"
+    indent       = "  "
 }

@@ -185,3 +185,9 @@ compile_commands.json
 
 # Eclipse generated file for annotation processors
 .factorypath
+
+# Don't ignore local gradle plugins
+!gradle/plugins/*.jar
+
+# Build constants are auto-generated on every build, no need to track them
+src/main/java/frc/robot/BuildConstants.java
