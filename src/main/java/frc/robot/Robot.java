@@ -22,6 +22,8 @@ public class Robot extends TimedRobot {
    */
   public Robot() {
     robotContainer = RobotContainer.getInstance();
+
+    Utilities.printGitInfo();
   }
 
   /**
