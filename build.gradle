@@ -7,7 +7,7 @@ buildscript {
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2025.2.1"
-    id "com.diffplug.spotless" version "6.25.0"
+    id "com.diffplug.spotless" version "7.0.2"
 }
 
 apply plugin: 'com.peterabeles.gversion'
@@ -127,7 +127,7 @@ spotless {
         toggleOffOn()
         googleJavaFormat()
         removeUnusedImports()
-        indentWithSpaces(4)
+        leadingTabsToSpaces(4)
         trimTrailingWhitespace()
         endWithNewline()
     }
@@ -137,24 +137,8 @@ spotless {
             exclude "**/build/**", "**/build-*/**"
         }
         greclipse()
-        indentWithSpaces(4)
+        leadingTabsToSpaces(4)
         trimTrailingWhitespace()
-        endWithNewline()
-    }
-    json {
-        target fileTree(".") {
-            include "**/*.json"
-            exclude "**/build/**", "**/build-*/**", "**/pathplanner/**"
-        }
-        gson().indentWithSpaces(2)
-    }
-    format "misc", {
-        target fileTree(".") {
-            include "**/*.md", "**/.gitignore"
-            exclude "**/build/**", "**/build-*/**"
-        }
-        trimTrailingWhitespace()
-        indentWithSpaces(2)
         endWithNewline()
     }
 }
