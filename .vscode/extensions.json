@@ -1,6 +1,7 @@
 {
   "recommendations": [
-    "richardwillis.vscode-spotless-gradle",
-    "mechanical-advantage.event-deploy-wpilib"
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "richardwillis.vscode-spotless-gradle"
   ]
 }

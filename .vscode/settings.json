@@ -29,13 +29,23 @@
     null
   ],
   "java.test.defaultConfig": "WPIlibUnitTests",
-  "spotlessGradle.format.enable": true,
-  "spotlessGradle.diagnostics.enable": false,
-  "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle",
-  "[json]": {
+
+  // Disable VSCode built-in formatting
+  "java.format.enabled": false,
+
+  // Explicit formatting configuration
+  "editor.detectIndentation": false,
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "editor.autoIndent": "full",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[java]": {
+    "spotlessGradle.format.enable": true,
     "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"
   },
-  "[java]": {
+  "[gradle]": {
+    "spotlessGradle.format.enable": true,
     "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"
   }
 }
