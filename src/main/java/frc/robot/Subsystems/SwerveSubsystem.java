@@ -17,6 +17,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -661,6 +662,10 @@ public class SwerveSubsystem extends SubsystemBase {
     return swerveDrive.getPitch();
   }
 
+  public Rotation2d getYaw() {
+    return swerveDrive.getYaw();
+  }
+
   /**
    * Gets the swerve drive object.
    *
@@ -674,5 +679,10 @@ public class SwerveSubsystem extends SubsystemBase {
     if (enableCreepDrive)
       swerveDrive.setMaximumAllowableSpeeds(maxCreepSpeed, maxCreepAngularVelocity);
     else swerveDrive.setMaximumAllowableSpeeds(maxSpeed, maxAngularVelocity);
+  }
+
+  public void addVisionMeasurement(Pose2d robotPose) {
+    swerveDrive.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+    swerveDrive.addVisionMeasurement(robotPose, Timer.getFPGATimestamp());
   }
 }
