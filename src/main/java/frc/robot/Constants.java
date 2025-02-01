@@ -41,7 +41,7 @@ public final class Constants {
 
   public final class Control {
     public final class Main {
-      public static final XboxController controller = new XboxController(0);
+      public static final int port = 0;
       public static final double leftXDeadband = 0.1;
       public static final double leftYDeadband = 0.1;
       public static final double rightXDeadband = 0.1;

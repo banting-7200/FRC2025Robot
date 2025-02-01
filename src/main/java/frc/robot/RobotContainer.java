@@ -11,7 +11,7 @@ import java.io.File;
 
 public class RobotContainer {
   private static RobotContainer instance;
-  private XboxController mainController = Constants.Control.Main.controller;
+  private XboxController mainController = new XboxController(Constants.Control.Main.port);
   private SwerveSubsystem drivebase;
   private Command driveFieldOrientedDirectAngle;
 
@@ -32,7 +32,6 @@ public class RobotContainer {
             () -> -mainController.getRightY());
 
     configureBindings();
-    System.out.println("ROBOT CONTAINER CREATED");
   }
 
   public static RobotContainer getInstance() {
