@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.*;
+import frc.robot.Vision.*;
 import java.io.File;
 
 public class RobotContainer {
@@ -14,6 +15,7 @@ public class RobotContainer {
   private XboxController mainController = new XboxController(Constants.Control.Main.port);
   private SwerveSubsystem drivebase;
   private Command driveFieldOrientedDirectAngle;
+  private Limelight limelight;
 
   private EventLoop loop = new EventLoop();
 
@@ -31,6 +33,7 @@ public class RobotContainer {
             () -> -mainController.getRightX(),
             () -> -mainController.getRightY());
 
+    limelight = new Limelight("limelight");
     configureBindings();
   }
 
@@ -56,5 +59,11 @@ public class RobotContainer {
 
   public void teleopPeriodic() {
     loop.poll();
+    addVisionMeasurement();
+  }
+
+  public void addVisionMeasurement() {
+    if (limelight.tagCount() < 1) return;
+    drivebase.addVisionMeasurement(limelight.getBotPose(drivebase.getYaw().getDegrees()));
   }
 }
