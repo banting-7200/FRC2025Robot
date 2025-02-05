@@ -13,6 +13,7 @@ public class RobotContainer {
   private static RobotContainer instance;
   private XboxController mainController = new XboxController(Constants.Control.Main.port);
   private SwerveSubsystem drivebase;
+  private CoralIntakeSubsystem coralIntake = new CoralIntakeSubsystem();
   private Command driveFieldOrientedDirectAngle;
 
   private EventLoop loop = new EventLoop();
@@ -56,5 +57,9 @@ public class RobotContainer {
 
   public void teleopPeriodic() {
     loop.poll();
+  }
+
+  public void enabledPeriodic() {
+    coralIntake.run();
   }
 }

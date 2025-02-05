@@ -6,6 +6,29 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 
 public final class Constants {
+
+  public final class Coral {
+    public final class DeviceIDs {
+      public static final int intakeMotor = 0;
+      public static final int pivotMotor = 1;
+    }
+
+    public final class Positions {
+      public static final double carry = 0;
+      public static final double intake = 0;
+      public static final double levelOne = 0;
+      public static final double levelTwo = 0;
+      public static final double levelThree = 0;
+      public static final double levelFour = 0;
+    }
+
+    public final class PID {
+      public static final double p = 0;
+      public static final double i = 0;
+      public static final double d = 0;
+    }
+  }
+
   public final class DriveBase {
     public static final double maxSpeed = Units.feetToMeters(14.5); // metres per second
     // TODO: why this number?
