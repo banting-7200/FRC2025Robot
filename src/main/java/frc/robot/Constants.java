@@ -6,6 +6,35 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 
 public final class Constants {
+  // TODO: tune these
+  public final class ElevatorConstants {
+
+    public final class MotorConfig {
+      public static final boolean inverted = false;
+      public static final int canID = 1;
+      public static final double positionConversionFactor = 360;
+      public static final double velocityConversionFactor = 1;
+    }
+
+    public final class PID {
+      public static final double p = 0.7;
+      public static final double i = 0;
+      public static final double d = 0;
+    }
+
+    public final class Positions {
+      public static double coralOne = 0;
+      public static double coralTwo = 0;
+      public static double coralThree = 0;
+      public static double coralFour = 0;
+      public static double algaeOne = 0;
+      public static double algaeTwo = 0;
+      public static double intake = 0;
+      public static double processor = 0;
+      public static double net = 0;
+    }
+  }
+
   public final class DriveBase {
     public static final double maxSpeed = Units.feetToMeters(14.5); // metres per second
     // TODO: why this number?
