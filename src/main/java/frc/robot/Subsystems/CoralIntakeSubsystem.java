@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkClosedLoopController;
 // Imports //
 import com.revrobotics.spark.SparkMax;
@@ -27,8 +28,8 @@ public class CoralIntakeSubsystem {
   // Constructor //
   public CoralIntakeSubsystem() {
     // Init Motors //
-    pivotMotor = new SparkMax(DeviceIDs.pivotMotor, null);
-    intakeMotor = new SparkMax(DeviceIDs.intakeMotor, null);
+    pivotMotor = new SparkMax(DeviceIDs.pivotMotor, MotorType.kBrushless);
+    intakeMotor = new SparkMax(DeviceIDs.intakeMotor, MotorType.kBrushless);
     // Init Config //
     config = new SparkMaxConfig();
     // Init Encoder //
@@ -37,7 +38,7 @@ public class CoralIntakeSubsystem {
     pidController = pivotMotor.getClosedLoopController();
     // Setup Config //
     config.inverted(true).idleMode(IdleMode.kBrake);
-    config.encoder.positionConversionFactor(1000).velocityConversionFactor(1000);
+    config.encoder.positionConversionFactor(360).velocityConversionFactor(1);
     config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(PID.p, PID.i, PID.d);
     pivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
@@ -88,7 +89,7 @@ public class CoralIntakeSubsystem {
   // #endregion
   // #region Action Methods //
   public void intake() {
-    intakeMotor.set(1);
+    intakeMotor.set(MotorSpeeds.intakeSpeed);
   }
 
   public void stopIntake() {
@@ -96,7 +97,7 @@ public class CoralIntakeSubsystem {
   }
 
   public void output() {
-    intakeMotor.set(-1);
+    intakeMotor.set(MotorSpeeds.outputSpeed);
   }
 
   // #endregion
