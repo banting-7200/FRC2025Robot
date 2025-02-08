@@ -8,6 +8,12 @@ import edu.wpi.first.wpilibj.XboxController;
 public final class Constants {
 
   public final class Coral {
+
+    public final class MotorSpeeds {
+      public static final double intakeSpeed = 1;
+      public static final double outputSpeed = -1;
+    }
+
     public final class DeviceIDs {
       public static final int intakeMotor = 0;
       public static final int pivotMotor = 1;
