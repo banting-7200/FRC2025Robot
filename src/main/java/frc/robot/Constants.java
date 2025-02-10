@@ -6,6 +6,32 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 
 public final class Constants {
+
+public final class AlgaeIntake {
+    public final class DeviceIDs{
+        public static final int IntakeMotor = 0;
+        public static final int PivotMotor = 0;
+        
+    }
+
+    public final class PID {
+        public static final double P = 0;
+        public static final double I = 0;
+        public static final double D = 0;
+      }
+      public final class Positions {
+        public static final double Carry = 0;
+        public static final int AttackPos = 1;
+        public static final int GrabPos = 2;
+        public static final int WalkPos = 3;
+      }
+
+    public final class Speeds{
+        public static final double IntakeSpeed = 1;
+        public static final double OutputSpeed = -1;
+    }
+}
+
   public final class DriveBase {
     public static final double maxSpeed = Units.feetToMeters(14.5); // metres per second
     // TODO: why this number?
