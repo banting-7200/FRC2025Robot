@@ -17,6 +17,7 @@ public class AlgaeIntakeSubsystem
 {
     // Instance Data //
     private double setPoint;
+    private boolean armState;
     // Motors //
     private SparkMax pivotMotor;
     private SparkMax intakeMotor;
@@ -47,22 +48,6 @@ public class AlgaeIntakeSubsystem
 
         pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
-    // #region Action Methods //
-    public void Intake()
-    {
-        intakeMotor.set(MotorSpeeds.intakeSpeed);
-    }
-
-    public void StopIntake()
-    {
-        intakeMotor.set(0);
-    }
-
-    public void Output()
-    {
-        intakeMotor.set(MotorSpeeds.outputSpeed);
-    }
-    // #endregion //
     // #region Base Methods //
     public void moveToPosition(double setPoint) {
         this.setPoint = setPoint;
@@ -80,4 +65,43 @@ public class AlgaeIntakeSubsystem
         pidController.setReference(setPoint, ControlType.kPosition);
     }
     // #endregion
+    // #region Action Methods //
+    public void Intake()
+    {
+        intakeMotor.set(MotorSpeeds.intakeSpeed);
+    }
+
+    public void StopIntake()
+    {
+        intakeMotor.set(0);
+    }
+
+    public void Output()
+    {
+        intakeMotor.set(MotorSpeeds.outputSpeed);
+    }
+    // Arm Controls //
+    public void ArmUp()
+    {
+        moveToPosition(Positions.armUp);
+        armState = true;
+    }
+    
+    public void ArmDown()
+    {
+        moveToPosition(Positions.armDown);
+        armState = false;
+    }
+
+    public void ArmToggle()
+    {
+        // Checks //
+        if (armState)
+            ArmDown();
+        else
+            ArmUp();
+        // Settings //
+        armState = !armState;
+    }
+    // #endregion //
 }

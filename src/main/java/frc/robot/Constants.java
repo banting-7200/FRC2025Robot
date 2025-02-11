@@ -22,6 +22,11 @@ public final class Constants {
           public static final double i = 0;
           public static final double d = 0;
         }
+
+        public final class Positions {
+            public static final double armUp = 0;
+            public static final double armDown = 0;
+        }
       }
   public final class DriveBase {
     public static final double maxSpeed = Units.feetToMeters(14.5); // metres per second
