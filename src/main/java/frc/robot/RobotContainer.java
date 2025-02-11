@@ -15,7 +15,7 @@ public class RobotContainer {
   private SwerveSubsystem drivebase;
   private Command driveFieldOrientedDirectAngle;
 
-  private EventLoop loop = new EventLoop();
+  public static EventLoop loop = new EventLoop();
 
   private RobotContainer() {
     drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
