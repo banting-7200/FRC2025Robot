@@ -6,6 +6,23 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 
 public final class Constants {
+
+  public final class CageClimb{
+    public final class DeviceIDz{
+        public static final int climbMotor = 0;
+    }
+  }
+
+  //AlgaeIntake likely incorrect
+  public final class AlgaeIntake{
+    public final class PID{
+        public static final int P = 0;
+        public static final int I = 0;
+        public static final int D = 0;
+    }
+  }
+
+
   public final class DriveBase {
     public static final double maxSpeed = Units.feetToMeters(14.5); // metres per second
     // TODO: why this number?
