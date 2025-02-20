@@ -17,11 +17,10 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants.*;
 
 // Subsystem //
-public class ElevatorSubsystem extends SubsystemBase {
+public class ElevatorSubsystem {
   // Static Data //
   private static ElevatorSubsystem lift;
   // Motors //
@@ -131,9 +130,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   // #endregion
-  // #region Override Methods //
-  @Override
-  public void periodic() {
+  // #region Action Methods //
+  public void run() {
     pidController.setReference(setPoint, ControlType.kPosition);
   }
   // #endregion

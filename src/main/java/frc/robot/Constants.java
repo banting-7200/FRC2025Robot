@@ -8,6 +8,17 @@ import edu.wpi.first.wpilibj.XboxController;
 public final class Constants {
   // TODO: tune these
   public final class ElevatorConstants {
+    public final class Input { // TODO: Improve Names //
+      public static int coralOne = 0;
+      public static int coralTwo = 0;
+      public static int coralThree = 0;
+      public static int coralFour = 0;
+      public static int algaeOne = 0;
+      public static int algaeTwo = 0;
+      public static int intake = 0;
+      public static int processor = 0;
+      public static int net = 0;
+    }
 
     public final class MotorConfig {
       public static final boolean inverted = false;
