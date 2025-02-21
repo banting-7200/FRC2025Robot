@@ -52,6 +52,11 @@ public class RobotContainer {
     enableCreepDrive.rising().ifHigh(() -> drivebase.setCreepDrive(true));
     enableCreepDrive.falling().ifHigh(() -> drivebase.setCreepDrive(false));
     drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
+
+    BooleanEvent cageToggle =
+        new BooleanEvent(
+            loop, () -> mainController.button(Constants.)
+        )
   }
 
   public void teleopPeriodic() {
