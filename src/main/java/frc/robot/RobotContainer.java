@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Commands.*;
 import frc.robot.Constants.Algae;
 import frc.robot.Constants.CageConstants;
 import frc.robot.Constants.Configurations;
@@ -23,18 +24,23 @@ public class RobotContainer {
   private SwerveSubsystem drivebase;
   private Command driveFieldOrientedDirectAngle;
 
-  private CoralIntakeSubsystem coralArm = CoralIntakeSubsystem.getInstance();
-  private AlgaeIntakeSubsystem algaeArm = AlgaeIntakeSubsystem.getInstance();
-  private CageClimbSubsystem cageArm = CageClimbSubsystem.getInstance();
-  private ElevatorSubsystem elevator = ElevatorSubsystem.getInstance();
+  private CoralIntakeSubsystem coralArm;
+  private AlgaeIntakeSubsystem algaeArm;
+  private CageClimbSubsystem cageArm;
+  private ElevatorSubsystem elevator;
+  private Commands commands = new Commands();
+  public boolean isCoralMode;
 
   private LightsSubsystem lights =
       new LightsSubsystem(Configurations.lightPort, Configurations.lightCount);
 
   private EventLoop loop = new EventLoop();
+  private EventLoop testLoop = new EventLoop();
 
   private RobotContainer() {
     drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
+
+    coralArm = new CoralIntakeSubsystem();
 
     driveFieldOrientedDirectAngle =
         drivebase.driveCommand(
@@ -59,40 +65,36 @@ public class RobotContainer {
 
     BooleanEvent zeroDriveBase =
         new BooleanEvent(
-            loop, () -> mainController.getRawButton(Constants.Control.Main.zeroSwerveDriveButton));
+            testLoop,
+            () -> mainController.getRawButton(Constants.Control.Main.zeroSwerveDriveButton));
     zeroDriveBase.rising().ifHigh(() -> drivebase.zeroGyro());
 
     BooleanEvent enableCreepDrive =
         new BooleanEvent(
-            loop, () -> mainController.getRawAxis(Constants.Control.Main.enableCreepDrive) > 0.5);
+            testLoop,
+            () -> mainController.getRawAxis(Constants.Control.Main.enableCreepDrive) > 0.5);
     enableCreepDrive.rising().ifHigh(() -> drivebase.setCreepDrive(true));
     enableCreepDrive.falling().ifHigh(() -> drivebase.setCreepDrive(false));
     drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
 
     // #region Intake/Output //
     // for coral/algae intake
-    BooleanEvent intakeEvent = buttonBox.button(Coral.Input.intake, loop).debounce(0.2);
-
-    intakeEvent
-        .rising()
-        .ifHigh(
-            () -> {
-              if (Elevator.mode) {
-                algaeArm.Intake();
-              } else {
-                coralArm.intake();
-              }
-            });
+    BooleanEvent intakeEvent = buttonBox.button(Coral.Input.intake, loop);
+    intakeEvent.ifHigh(
+        () -> {
+          if (isCoralMode) {
+            commands.intakeCoral();
+          } else {
+            commands.intakeAlgae();
+          }
+        });
 
     intakeEvent
         .falling()
         .ifHigh(
             () -> {
-              if (Elevator.mode) {
-                algaeArm.StopIntake();
-              } else {
-                coralArm.stopIntake();
-              }
+              coralArm.stopIntake();
+              coralArm.moveToCarry();
             });
 
     // for coral/algae output
@@ -150,7 +152,7 @@ public class RobotContainer {
 
     algaeArticulateDown.ifHigh(
         () -> {
-          algaeArm.AlgaeArmArticulateDown();
+          algaeArm.algaeArmArticulateDown();
         });
     // #endregion //
     // #region Cage //
@@ -173,12 +175,10 @@ public class RobotContainer {
         .rising()
         .ifHigh(
             () -> {
-              if (Elevator.mode) {
-                elevator.moveToAlgaeOne();
-                algaeArm.ArmDown();
+              if (isCoralMode) {
+                commands.outputCoralAtPosition(Constants.Elevator.Positions.coralOne);
               } else {
-                elevator.moveToCoralOne();
-                coralArm.moveToDropoff();
+                commands.outputAlgaeAtPosition(Constants.Elevator.Positions.algaeOne);
               }
             });
 
@@ -187,19 +187,19 @@ public class RobotContainer {
         .rising()
         .ifHigh(
             () -> {
-              if (Elevator.mode) {
-                elevator.moveToAlgaeTwo();
-                algaeArm.ArmDown();
-              } else elevator.moveToCoralTwo();
+              if (isCoralMode) {
+                commands.outputCoralAtPosition(Constants.Elevator.Positions.coralTwo);
+              } else {
+                commands.outputAlgaeAtPosition(Constants.Elevator.Positions.algaeTwo);
+              }
             });
-
     BooleanEvent goLevelThree = buttonBox.button(Elevator.Input.levelThree, loop).debounce(0.2);
     goLevelThree
         .rising()
         .ifHigh(
             () -> {
-              elevator.moveToCoralThree();
-              algaeArm.ArmDown();
+              commands.outputCoralAtPosition(Constants.Elevator.Positions.coralThree);
+              algaeArm.armDown();
             });
 
     BooleanEvent goLevelFour = buttonBox.button(Elevator.Input.levelFour, loop).debounce(0.2);
@@ -207,8 +207,8 @@ public class RobotContainer {
         .rising()
         .ifHigh(
             () -> {
-              elevator.moveToCoralFour();
-              algaeArm.ArmDown();
+              commands.outputCoralAtPosition(Constants.Elevator.Positions.coralFour);
+              algaeArm.armDown();
             });
     // #endregion //
   }

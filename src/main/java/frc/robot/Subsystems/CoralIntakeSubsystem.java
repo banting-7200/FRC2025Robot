@@ -41,7 +41,7 @@ public class CoralIntakeSubsystem {
   private double setPoint = Positions.carry;
 
   // Constructor //
-  private CoralIntakeSubsystem() {
+  public CoralIntakeSubsystem() {
     // Init Motors //
     pivotMotor = new SparkMax(DeviceIDs.pivotMotor, MotorType.kBrushless);
     intakeMotor = new SparkMax(DeviceIDs.intakeMotor, MotorType.kBrushless);
@@ -66,7 +66,7 @@ public class CoralIntakeSubsystem {
     instance = this;
   }
 
-  public static CoralIntakeSubsystem getInstance() {
+  public static synchronized CoralIntakeSubsystem getInstance() {
     // If no instance previously made then create one //
     if (instance == null) return new CoralIntakeSubsystem();
     // Return Instance //
@@ -114,8 +114,6 @@ public class CoralIntakeSubsystem {
   // #region Level Methods //
   /** Moves the Coral arm to the intake position */
   public void moveToIntake() { // right from our view
-    // Check whether Arm is Down //
-    checkAlgaeArm();
     // Wait Until Arm is Down //
     new WaitUntilCommand(algaeArm::IsDown)
         .andThen(
@@ -128,22 +126,13 @@ public class CoralIntakeSubsystem {
     moveToPosition(Positions.carry);
   }
 
-  public void moveToDropoff() { // left from our view
-    // Check whether Arm is Down //
-    checkAlgaeArm();
+  public void moveToDropoff() { // Left from our view
     // Wait Until Arm is Down //
     new WaitUntilCommand(algaeArm::IsDown)
         .andThen(
-            () -> { // Move The Coral Arm to Dropoff Position //
+            () -> { // Move The Coral Arm to Intake Position //
               moveToPosition(Positions.dropOff);
             });
-  }
-
-  public void checkAlgaeArm() { // Move Algae Arm out of way if up //
-    if (algaeArm.armState == true) // Is the arm up? // Added true to make easier to read //
-    {
-      algaeArm.ArmDown();
-    }
   }
 
   public boolean hasCoral() {
@@ -172,7 +161,6 @@ public class CoralIntakeSubsystem {
   }
 
   // #endregion
-  public void articulate() {}
 
   public void coralArticulateUp() {
     // Conditions //

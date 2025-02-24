@@ -29,7 +29,7 @@ public class CageClimbSubsystem {
   boolean isCageArmUp = false;
 
   // Constructor //
-  private CageClimbSubsystem() {
+  public CageClimbSubsystem() {
 
     climbMotor = new SparkMax(DeviceIDz.climbMotor, MotorType.kBrushless);
 
@@ -44,7 +44,7 @@ public class CageClimbSubsystem {
     climbRLimitSwitch = climbMotor.getReverseLimitSwitch();
   }
 
-  public static CageClimbSubsystem getInstance() {
+  public static synchronized CageClimbSubsystem getInstance() {
     if (instance == null) return new CageClimbSubsystem();
     return instance;
   }

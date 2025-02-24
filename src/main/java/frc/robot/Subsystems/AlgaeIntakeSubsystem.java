@@ -24,7 +24,7 @@ public class AlgaeIntakeSubsystem {
   public CoralIntakeSubsystem coralArm;
   // Instance Data //
   public double setPoint;
-  public boolean armState;
+  public boolean isUp;
   // Motors //
   public SparkMax pivotMotor;
   public SparkMax intakeMotor;
@@ -58,12 +58,12 @@ public class AlgaeIntakeSubsystem {
     pivotRLimitSwitch = pivotMotor.getReverseLimitSwitch();
     intakeRLimitSwitch = intakeMotor.getReverseLimitSwitch();
     // Update Singleton //
-    coralArm = CoralIntakeSubsystem.instance;
+    coralArm = CoralIntakeSubsystem.getInstance();
     // Update Singleton //
     instance = this;
   }
 
-  public static AlgaeIntakeSubsystem getInstance() {
+  public static synchronized AlgaeIntakeSubsystem getInstance() {
     if (instance == null) return new AlgaeIntakeSubsystem();
     return instance;
   }
@@ -152,32 +152,32 @@ public class AlgaeIntakeSubsystem {
 
   // Arm Controls //
   /** Moves the arm up */
-  public void ArmUp() {
+  public void armUp() {
     new WaitUntilCommand(coralArm::isAtCarryPosition)
         .unless(this::hasAlgae)
         .andThen(
             () -> { // Move The Algae Arm to Carry Position //
               moveToPosition(Positions.armUp);
               // Update Values //
-              armState = true;
+              isUp = true;
             });
   }
 
   /** Moves the arm down */
-  public void ArmDown() {
+  public void armDown() {
     moveToPosition(Positions.armDown);
-    armState = false;
+    isUp = false;
   }
 
   /** Toggles between arm up and arm down */
-  public void ArmToggle() {
+  public void armToggle() {
     // Checks //
-    if (armState) ArmDown();
-    else ArmUp();
+    if (isUp) armDown();
+    else armUp();
   }
 
   /** Checks whether Coral Arm is ready for Algae Arm to move up, if not then get coral arm ready */
-  public void CheckCoralArm() {
+  public void checkCoralArm() {
     // Data //
     boolean isCoralArmReady = coralArm.isAtCarryPosition();
     // Conditions //
@@ -187,14 +187,14 @@ public class AlgaeIntakeSubsystem {
   }
 
   // #endregion //
-  public void AlgaeArmArticulateUp() { // Up is positive + //
+  public void algaeArmArticulateUp() { // Up is positive + //
     // Conditions //
     if (pivotFLimitSwitch.isPressed()) return;
     // Settings //
     setPoint += 0.01;
   }
 
-  public void AlgaeArmArticulateDown() { // Down is negative - //
+  public void algaeArmArticulateDown() { // Down is negative - //
 
     // Conditions //
     if (pivotRLimitSwitch.isPressed()) return;
@@ -202,7 +202,7 @@ public class AlgaeIntakeSubsystem {
     setPoint -= 0.01;
   }
 
-  public void AlgaeArmArticulateOff() {
+  public void algaeArmArticulateOff() {
     pivotMotor.stopMotor();
   }
 }

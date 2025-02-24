@@ -65,7 +65,7 @@ public class ElevatorSubsystem {
    *
    * @return The Elevator Subsystem
    */
-  public static ElevatorSubsystem getInstance() {
+  public static synchronized ElevatorSubsystem getInstance() {
     return instance == null ? new ElevatorSubsystem() : instance;
   }
 
@@ -89,7 +89,7 @@ public class ElevatorSubsystem {
    *
    * @param position The position to move to
    */
-  private void moveToPosition(double position) {
+  public void moveToPosition(double position) {
     // Checks //
     if (position > Elevator.Positions.coralTwo)
       DriveBase.TranslationPID.p = DriveBase.TranslationPID.slowP;
@@ -98,75 +98,16 @@ public class ElevatorSubsystem {
     setPoint = position;
   }
 
+  public void moveToCarry() {
+    moveToPosition(Positions.carry);
+  }
+
   // #endregion //
 
   // #region Coral Methods //
-  public void moveToCoralOne() {
-    moveToPosition(Positions.coralOne);
-  }
-
-  public void moveToCoralTwo() {
-    moveToPosition(Positions.coralTwo);
-  }
-
-  public void moveToCoralThree() {
-    moveToPosition(Positions.coralThree);
-  }
-
-  public void moveToCoralFour() {
-    moveToPosition(Positions.coralFour);
-  }
-
-  // #endregion
-  // #region Algae Methods //
-  public void moveToAlgaeOne() {
-    moveToPosition(Positions.algaeOne);
-  }
-
-  public void moveToAlgaeTwo() {
-    moveToPosition(Positions.algaeTwo);
-  }
 
   // #endregion
   // #region Level Methods //
-  public void moveToFloor() {
-    moveToPosition(Positions.floorLevel);
-    setPoint = 0;
-  }
-
-  public void moveToLevelOne() {
-    if (Elevator.mode) // Algae //
-    {
-      moveToAlgaeOne();
-    } else // Coral //
-    {
-      moveToCoralOne();
-    }
-  }
-
-  public void moveToLevelTwo() {
-    if (Elevator.mode) // Algae //
-    {
-      moveToAlgaeTwo();
-    } else // Coral //
-    {
-      moveToCoralTwo();
-    }
-  }
-
-  public void moveToLevelThree() {
-    if (!Elevator.mode) // Coral //
-    {
-      moveToCoralThree();
-    }
-  }
-
-  public void moveToLevelFour() {
-    if (!Elevator.mode) // Coral //
-    {
-      moveToCoralFour();
-    }
-  }
 
   // #endregion //
   // #region Action Methods //
@@ -177,5 +118,11 @@ public class ElevatorSubsystem {
   public void run() {
     pidController.setReference(setPoint, ControlType.kPosition);
   }
+
   // #endregion
+
+  public void moveToFloor() {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'moveToFloor'");
+  }
 }

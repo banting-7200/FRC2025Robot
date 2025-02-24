@@ -59,6 +59,7 @@ public final class Constants {
       public static double algaeOne = 0;
       public static double algaeTwo = 0;
       public static double floorLevel = 0;
+      public static double carry = 0;
     }
   }
 
