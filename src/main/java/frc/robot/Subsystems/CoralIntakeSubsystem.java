@@ -14,7 +14,8 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.*;
+import frc.robot.Constants.CoralSystem;
+import frc.robot.Constants.deviceIDs;
 
 // Subsystem //
 public class CoralIntakeSubsystem extends SubsystemBase {
@@ -27,8 +28,8 @@ public class CoralIntakeSubsystem extends SubsystemBase {
   SparkLimitSwitch pivotFLimitSwitch;
   SparkLimitSwitch pivotRLimitSwitch;
   SparkLimitSwitch intakeRLimitSwitch;
-  public double setpoint = coralSystem.Positions.carry;
-  public boolean hasCoral;
+
+  public double setpoint = CoralSystem.Positions.carry;
 
   public CoralIntakeSubsystem() {
     pivotMotor = new SparkMax(deviceIDs.coralPivotID, MotorType.kBrushless);
@@ -41,7 +42,7 @@ public class CoralIntakeSubsystem extends SubsystemBase {
     config
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(coralSystem.PID.P, coralSystem.PID.I, coralSystem.PID.D);
+        .pid(CoralSystem.PID.P, CoralSystem.PID.I, CoralSystem.PID.D);
     pivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     pivotFLimitSwitch = pivotMotor.getForwardLimitSwitch();
     pivotRLimitSwitch = pivotMotor.getReverseLimitSwitch();
@@ -49,29 +50,55 @@ public class CoralIntakeSubsystem extends SubsystemBase {
     intakeRLimitSwitch = intakeMotor.getForwardLimitSwitch();
   }
 
-  public void moveToPosition(double setpoint) {
-    this.setpoint = setpoint;
-  }
-
-  public boolean hasReachedSetpoint() {
-    double acceptableRange = 5;
-    return Math.abs(encoder.getPosition() - setpoint) <= acceptableRange;
-  }
-
   public void run() {
     pidController.setReference(setpoint, ControlType.kPosition);
   }
 
   public boolean hasCoral() {
-    hasCoral = intakeRLimitSwitch.isPressed();
-    return hasCoral;
+    return intakeRLimitSwitch.isPressed();
   }
 
-  public void spinIntake(double speed) {
+  // Arm Motor
+
+  public void moveToPosition(double setpoint) {
+    this.setpoint = setpoint;
+  }
+
+  public double getPosition() {
+    return encoder.getPosition();
+  }
+
+  public boolean hasReachedSetpoint() {
+    return Math.abs(getPosition() - setpoint) <= CoralSystem.Positions.safetyRange;
+  }
+
+  public void moveToIntakePosition() {
+    moveToPosition(CoralSystem.Positions.intake);
+  }
+
+  public void moveToCarryPosition() {
+    moveToPosition(CoralSystem.Positions.carry);
+  }
+
+  public void moveToOutputPosition() {
+    moveToPosition(CoralSystem.Positions.dropOff);
+  }
+
+  // Intake Motor
+
+  private void spinIntake(double speed) {
     intakeMotor.set(speed);
   }
 
-  public void stopIntake() {
+  public void intake() {
+    spinIntake(CoralSystem.MotorSpeeds.intakeSpeed);
+  }
+
+  public void output() {
+    spinIntake(CoralSystem.MotorSpeeds.outputSpeed);
+  }
+
+  public void stop() {
     intakeMotor.stopMotor();
   }
 }

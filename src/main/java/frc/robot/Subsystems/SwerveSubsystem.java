@@ -39,6 +39,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.json.simple.parser.ParseException;
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -674,5 +677,23 @@ public class SwerveSubsystem extends SubsystemBase {
     if (enableCreepDrive)
       swerveDrive.setMaximumAllowableSpeeds(maxCreepSpeed, maxCreepAngularVelocity);
     else swerveDrive.setMaximumAllowableSpeeds(maxSpeed, maxAngularVelocity);
+  }
+
+  public Command aimAtTarget(PhotonCamera camera) {
+
+    return run(
+        () -> {
+          PhotonPipelineResult result = camera.getAllUnreadResults().get(0);
+          if (result.hasTargets()) {
+            drive(
+                getTargetSpeeds(
+                    0,
+                    0,
+                    Rotation2d.fromDegrees(
+                        result
+                            .getBestTarget()
+                            .getYaw()))); // Not sure if this will work, more math may be required.
+          }
+        });
   }
 }

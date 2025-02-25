@@ -1,12 +1,17 @@
 package frc.robot.Commands.AlgaeCommands;
 
+import java.time.Clock;
+
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.algaeSystem;
+import frc.robot.Constants.AlgaeSystem;
+import frc.robot.Constants.CommandTimes;
 import frc.robot.Subsystems.AlgaeIntakeSubsystem;
 
 public class IntakeAlgaeCommand extends Command {
   AlgaeIntakeSubsystem algaeController;
-
+  Clock timer = Clock.systemDefaultZone();
+  long timeoutTime;
+  
   public IntakeAlgaeCommand(AlgaeIntakeSubsystem algaeController) {
     this.algaeController = algaeController;
     addRequirements(algaeController);
@@ -17,17 +22,17 @@ public class IntakeAlgaeCommand extends Command {
 
   @Override
   public void execute() {
-    algaeController.spinIntake(algaeSystem.MotorSpeeds.intakeSpeed);
-    ;
+    algaeController.moveToDownPosition();
+    algaeController.intake();
   }
 
   @Override
   public boolean isFinished() {
-    return algaeController.hasAlgae();
+    return algaeController.hasAlgae() || (timer.millis() - timeoutTime) >= CommandTimes.algaeIntakeTime;
   }
 
   @Override
   public void end(boolean intrupted) {
-    algaeController.StopIntake();
+    algaeController.stop();
   }
 }

@@ -1,7 +1,7 @@
 package frc.robot.Commands.CoralCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.coralSystem;
+import frc.robot.Constants.CommandTimes;
 import frc.robot.Subsystems.CoralIntakeSubsystem;
 import java.time.Clock;
 
@@ -22,16 +22,16 @@ public class OutputCoralCommand extends Command {
 
   @Override
   public void execute() {
-    coralController.spinIntake(coralSystem.MotorSpeeds.outputSpeed);
+    coralController.intake();
   }
 
   @Override
   public boolean isFinished() {
-    return (timer.millis() - timeoutTime) >= 2000;
+    return (timer.millis() - timeoutTime) >= CommandTimes.coralShootTime;
   }
 
   @Override
   public void end(boolean interupted) {
-    coralController.stopIntake();
+    coralController.stop();
   }
 }

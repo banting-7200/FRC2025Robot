@@ -1,0 +1,6 @@
+
+    liftMotor.set(-1);
+    new WaitUntilCommand(negativeLimitSwitch::get).andThen(() -> 
+    {
+      
+    });

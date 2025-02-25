@@ -15,8 +15,10 @@ import frc.robot.Commands.AlgaeCommands.MoveAlgaeArm;
 import frc.robot.Commands.CoralCommands.IntakeCoralCommand;
 import frc.robot.Commands.CoralCommands.MoveCoralArm;
 import frc.robot.Commands.CoralCommands.OutputCoralCommand;
+import frc.robot.Commands.ElevatorCommands.MoveElevator;
 import frc.robot.Constants.*;
 import frc.robot.Subsystems.*;
+import frc.robot.Vision.Limelight;
 import java.io.File;
 import java.util.function.BooleanSupplier;
 
@@ -24,7 +26,7 @@ import java.util.function.BooleanSupplier;
 
 public class RobotContainer {
   private XboxController mainController = new XboxController(Control.Main.port);
-  public Joystick buttonBox = new Joystick(Control.ButtonBox.port); 
+  public Joystick buttonBox = new Joystick(Control.ButtonBox.port);
   private SwerveSubsystem drivebase;
   private Command driveFieldOrientedDirectAngle;
   private static RobotContainer instance;
@@ -33,19 +35,13 @@ public class RobotContainer {
   public AlgaeIntakeSubsystem algaeController;
   public CageClimbSubsystem cageArm;
   public ElevatorSubsystem elevator;
+  public Limelight limelight;
+
+  public ShuffleboardSubsystem shuffle;
+
   public boolean isRobotInCoralMode;
 
-  private void setRobotMode(boolean mode){
-    isRobotInCoralMode = mode;
-  }
-
-  private boolean isRobotInCoralMode() {
-    return isRobotInCoralMode;
-  }
-
-  BooleanSupplier robotHasCoral = this::isRobotInCoralMode;
-
-  Trigger conditionTrigger = new Trigger(robotHasCoral);
+  private int testMode = 0;
 
   //   private Commands commands = new Commands();
   //   public boolean isCoralMode;
@@ -59,9 +55,16 @@ public class RobotContainer {
       new LightsSubsystem(Configurations.lightPort, Configurations.lightCount);
 
   private EventLoop loop = new EventLoop();
+  private EventLoop testLoop = new EventLoop();
   private EventLoop swerveLoop = new EventLoop();
 
   private RobotContainer() {
+    limelight = new Limelight("Limelight");
+    coralController = new CoralIntakeSubsystem();
+    algaeController = new AlgaeIntakeSubsystem();
+    cageArm = new CageClimbSubsystem();
+    elevator = new ElevatorSubsystem();
+    shuffle = ShuffleboardSubsystem.getInstance();
     drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
 
     // coralArm = new CoralIntakeSubsystem();
@@ -86,93 +89,120 @@ public class RobotContainer {
         new BooleanEvent(
             swerveLoop,
             () -> mainController.getRawButton(Constants.Control.Main.zeroSwerveDriveButton));
-    zeroDriveBase.rising().ifHigh(() -> drivebase.zeroGyro());
+    zeroDriveBase.rising().ifHigh(() -> drivebase.zeroGyroWithAlliance());
 
     BooleanEvent enableCreepDrive =
         new BooleanEvent(
             swerveLoop,
             () -> mainController.getRawAxis(Constants.Control.Main.enableCreepDrive) > 0.5);
+
+    BooleanEvent switchTestMode =
+        new BooleanEvent(
+            testLoop, () -> mainController.getRawButton(Constants.Control.Main.switchTestMode));
+
+    switchTestMode.rising().ifHigh(() -> testMode++);
     enableCreepDrive.rising().ifHigh(() -> drivebase.setCreepDrive(true));
     enableCreepDrive.falling().ifHigh(() -> drivebase.setCreepDrive(false));
     drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
 
-    BooleanEvent switchGamePieceMode = new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.gamePieceSwitch));
-    switchGamePieceMode.ifHigh(() -> setRobotMode(true));
-    switchGamePieceMode.negate().ifHigh(() -> setRobotMode(false));
-
+    // Switch between coral and algae mode
+    BooleanEvent coralMode =
+        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.gamePieceSwitch));
+    
     //     // #region Algae related //
-    //Intake algae: WILL NOT MOVE ELEVATOR
-    conditionTrigger.negate().and(new JoystickButton(buttonBox, Control.ButtonBox.intake).onTrue(new MoveCoralArm(coralController, coralSystem.Positions.carry).andThen(new MoveAlgaeArm(algaeController, algaeSystem.Positions.armDown)).andThen(new IntakeAlgaeCommand(algaeController))));
+    // Intake algae: WILL NOT MOVE ELEVATOR
+    coralMode.negate().ifHigh( () ->
+            new JoystickButton(buttonBox, Control.ButtonBox.intake)
+                .onTrue(
+                    new MoveCoralArm(coralController, CoralSystem.Positions.carry)
+                        .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down))
+                        .andThen(new IntakeAlgaeCommand(algaeController))));
     // Output algae command, will move arm back up
-    conditionTrigger.negate().and(new JoystickButton(buttonBox, Control.ButtonBox.output).onTrue(new OutputCoralCommand(coralController).andThen(new MoveAlgaeArm(algaeController, algaeSystem.Positions.armUp))));
+    coralMode
+        .negate()
+        .ifHigh(() -> 
+            new JoystickButton(buttonBox, Control.ButtonBox.output)
+                .onTrue(
+                    new OutputCoralCommand(coralController)
+                        .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.up))));
     // Move to floor level
-    conditionTrigger.negate().and(new JoystickButton(buttonBox, Control.ButtonBox.floorLevelButton).onTrue(new MoveElevator(elevator, Elevator.Positions.floorLevel)));
+    coralMode
+        .negate()
+        .ifHigh( () ->
+            new JoystickButton(buttonBox, Control.ButtonBox.floorLevelButton)
+                .onTrue(new MoveElevator(elevator, Elevator.Positions.floorLevel)));
     // Move to Algae elevator height: level 1
-    conditionTrigger.negate().and(new JoystickButton(buttonBox, Control.ButtonBox.level1Button).onTrue(new MoveElevator(elevator, Elevator.Positions.algaeOne)));
+    coralMode
+        .negate()
+        .ifHigh(() ->
+            new JoystickButton(buttonBox, Control.ButtonBox.level1Button)
+                .onTrue(new MoveElevator(elevator, Elevator.Positions.algaeOne)));
 
-    conditionTrigger.negate().and(new JoystickButton(buttonBox, Control.ButtonBox.level2Button).onTrue(new MoveElevator(elevator, Elevator.Positions.algaeTwo)));
-
+    coralMode
+        .negate()
+        .ifHigh(() ->
+            new JoystickButton(buttonBox, Control.ButtonBox.level2Button)
+                .onTrue(new MoveElevator(elevator, Elevator.Positions.algaeTwo)));
 
     //     // #endregion //
 
     //      // //#region Coral related //
     // Coral Intake Command
-    conditionTrigger.and(
+    coralMode.ifHigh( () ->
         new JoystickButton(buttonBox, Control.ButtonBox.intake)
             .onTrue(
-                new MoveAlgaeArm(algaeController, Constants.algaeSystem.Positions.armDown)
+                new MoveAlgaeArm(algaeController, Constants.AlgaeSystem.Positions.down)
                     .alongWith(new MoveElevator(elevator, Elevator.Positions.floorLevel))
-                    .andThen(new MoveCoralArm(coralController, coralSystem.Positions.intake))
+                    .andThen(new MoveCoralArm(coralController, CoralSystem.Positions.intake))
                     .andThen(new IntakeCoralCommand(coralController))
-                    .andThen(new MoveCoralArm(coralController, coralSystem.Positions.carry))
+                    .andThen(new MoveCoralArm(coralController, CoralSystem.Positions.carry))
                     .andThen(new MoveElevator(elevator, Elevator.Positions.carry))
-                    .alongWith(new MoveAlgaeArm(algaeController, algaeSystem.Positions.armUp))));
+                    .alongWith(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.up))));
 
     // Coral Output Command
-    conditionTrigger.and(
-    new JoystickButton(buttonBox, Control.ButtonBox.output)
-        .onTrue(new OutputCoralCommand(coralController)));
+    coralMode.ifHigh(() ->
+        new JoystickButton(buttonBox, Control.ButtonBox.output)
+            .onTrue(new OutputCoralCommand(coralController)));
 
     // Ready output of coral at elevator height: Floor level
-    conditionTrigger.and(
-    new JoystickButton(buttonBox, Control.ButtonBox.floorLevelButton)
-        .onTrue(
-            new MoveElevator(elevator, Elevator.Positions.floorLevel)
-                .alongWith(new MoveAlgaeArm(algaeController, algaeSystem.Positions.armDown))
-                .andThen(new MoveCoralArm(coralController, coralSystem.Positions.dropOff))));
+    coralMode.ifHigh( () ->
+        new JoystickButton(buttonBox, Control.ButtonBox.floorLevelButton)
+            .onTrue(
+                new MoveElevator(elevator, Elevator.Positions.floorLevel)
+                    .alongWith(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down))
+                    .andThen(new MoveCoralArm(coralController, CoralSystem.Positions.dropOff))));
 
     // Ready output of coral at elevator height: level 1
-    conditionTrigger.and(
-    new JoystickButton(buttonBox, Control.ButtonBox.level1Button)
-        .onTrue(
-            new MoveElevator(elevator, Elevator.Positions.coralOne)
-                .alongWith(new MoveAlgaeArm(algaeController, algaeSystem.Positions.armDown))
-                .andThen(new MoveCoralArm(coralController, coralSystem.Positions.dropOff))));
+    coralMode.ifHigh(() ->
+        new JoystickButton(buttonBox, Control.ButtonBox.level1Button)
+            .onTrue(
+                new MoveElevator(elevator, Elevator.Positions.coralOne)
+                    .alongWith(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down))
+                    .andThen(new MoveCoralArm(coralController, CoralSystem.Positions.dropOff))));
 
     // Ready output of coral at elevator height: level 2
-    conditionTrigger.and(
-    new JoystickButton(buttonBox, Control.ButtonBox.level2Button)
-        .onTrue(
-            new MoveElevator(elevator, Elevator.Positions.coralTwo)
-                .alongWith(new MoveAlgaeArm(algaeController, algaeSystem.Positions.armDown))
-                .andThen(new MoveCoralArm(coralController, coralSystem.Positions.dropOff))));
+    coralMode.ifHigh(() ->
+        new JoystickButton(buttonBox, Control.ButtonBox.level2Button)
+            .onTrue(
+                new MoveElevator(elevator, Elevator.Positions.coralTwo)
+                    .alongWith(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down))
+                    .andThen(new MoveCoralArm(coralController, CoralSystem.Positions.dropOff))));
 
     // Ready output of coral at elevator height: level 3
-    conditionTrigger.and(
-    new JoystickButton(buttonBox, Control.ButtonBox.level3Button)
-        .onTrue(
-            new MoveElevator(elevator, Elevator.Positions.coralThree)
-                .alongWith(new MoveAlgaeArm(algaeController, algaeSystem.Positions.armDown))
-                .andThen(new MoveCoralArm(coralController, coralSystem.Positions.dropOff))));
+    coralMode.ifHigh(() ->
+        new JoystickButton(buttonBox, Control.ButtonBox.level3Button)
+            .onTrue(
+                new MoveElevator(elevator, Elevator.Positions.coralThree)
+                    .alongWith(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down))
+                    .andThen(new MoveCoralArm(coralController, CoralSystem.Positions.dropOff))));
 
     // Ready output of coral at elevator height: level 4
-    conditionTrigger.and(
-    new JoystickButton(buttonBox, Control.ButtonBox.level4Button)
-        .onTrue(
-            new MoveElevator(elevator, Elevator.Positions.coralFour)
-                .alongWith(new MoveAlgaeArm(algaeController, algaeSystem.Positions.armDown))
-                .andThen(new MoveCoralArm(coralController, coralSystem.Positions.dropOff))));
-
+    coralMode.ifHigh(() ->
+        new JoystickButton(buttonBox, Control.ButtonBox.level4Button)
+            .onTrue(
+                new MoveElevator(elevator, Elevator.Positions.coralFour)
+                    .alongWith(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down))
+                    .andThen(new MoveCoralArm(coralController, CoralSystem.Positions.dropOff))));
 
     //      // #endregion //
 
@@ -181,6 +211,11 @@ public class RobotContainer {
   public void teleopPeriodic() {
     swerveLoop.poll();
     loop.poll();
+
+    algaeController.run();
+    coralController.run();
+    cageArm.run();
+    elevator.run();
     // lights.run();
 
     // if (coralArm.hasCoral()) {
@@ -190,5 +225,27 @@ public class RobotContainer {
     // } else {
     //   lights.hasNothing();
     // }
+  }
+
+  public void turnOffLimelight(){
+    limelight.setLight(false);
+  }
+
+  public void updateShuffle(){
+    shuffle.setTab("Driver");
+    shuffle.setBoolean("Algae", algaeController.hasAlgae());
+    shuffle.setBoolean("Coral", coralController.hasCoral());
+    
+    shuffle.setTab("Status");
+    shuffle.setLayout("Algae", 1, 3);
+        shuffle.setBoolean("Has Algae", algaeController.hasAlgae());
+        shuffle.setNumber("Angle", algaeController.getPosition());
+    shuffle.setLayout("Coral", 1, 3);
+        shuffle.setBoolean("Has Coral", coralController.hasCoral());
+        shuffle.setNumber("Angle", coralController.getPosition());
+    shuffle.setLayout("Climb",1,2);
+        shuffle.setBoolean("Deployed", cageArm.isUp());
+    shuffle.setLayout("Elevator",1,2);
+        shuffle.setNumber("Height", elevator.getPosition());
   }
 }

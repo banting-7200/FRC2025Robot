@@ -105,5 +105,9 @@ public class CageClimbSubsystem {
     if (isCageArmUp) armDown();
     else armUp();
   }
+
+  public boolean isUp(){
+    return isCageArmUp;
+  }
   // #endregion //
 }

@@ -14,7 +14,8 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.*;
+import frc.robot.Constants.AlgaeSystem;
+import frc.robot.Constants.deviceIDs;
 
 // Subsystem //
 public class AlgaeIntakeSubsystem extends SubsystemBase {
@@ -30,8 +31,6 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
   public SparkLimitSwitch pivotRLimitSwitch;
   public SparkLimitSwitch intakeRLimitSwitch;
 
-  public boolean hasAlgae;
-
   public AlgaeIntakeSubsystem() {
 
     pivotMotor = new SparkMax(deviceIDs.algaePivotID, MotorType.kBrushless);
@@ -39,11 +38,11 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
     pivotEncoder = pivotMotor.getAbsoluteEncoder();
     pidController = pivotMotor.getClosedLoopController();
     pivotConfig.inverted(true).idleMode(IdleMode.kBrake);
-    pivotConfig.encoder.positionConversionFactor(1000).velocityConversionFactor(1000);
+    pivotConfig.encoder.positionConversionFactor(360).velocityConversionFactor(1);
     pivotConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(algaeSystem.PID.P, algaeSystem.PID.I, algaeSystem.PID.D);
+        .pid(AlgaeSystem.PID.P, AlgaeSystem.PID.I, AlgaeSystem.PID.D);
 
     pivotMotor.configure(
         pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -53,38 +52,59 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
     intakeRLimitSwitch = intakeMotor.getReverseLimitSwitch();
   }
 
-  public boolean hasReachedSetpoint() {
-    double acceptableRange = 5;
-    return Math.abs(pivotEncoder.getPosition() - setpoint) <= acceptableRange;
-  }
-
-  public void moveToPosition(double setpoint) {
-    this.setpoint = setpoint;
-  }
-
   public void run() {
     pidController.setReference(setpoint, ControlType.kPosition);
   }
 
   public boolean hasAlgae() {
-    hasAlgae = intakeRLimitSwitch.isPressed();
-    return hasAlgae;
+    return intakeRLimitSwitch.isPressed();
   }
 
-  public void spinIntake(double speed) {
+  // Arm Motor
+
+  public void moveToPosition(double setpoint) {
+    this.setpoint = setpoint;
+  }
+
+  public double getPosition() {
+    return pivotEncoder.getPosition();
+  }
+
+  public boolean hasReachedSetpoint() {
+    return Math.abs(getPosition() - setpoint) <= AlgaeSystem.Positions.safetyRange;
+  }
+
+  public void moveToUpPosition() {
+    moveToPosition(AlgaeSystem.Positions.up);
+  }
+
+  public void moveToShootPosition() {
+    moveToPosition(AlgaeSystem.Positions.shoot);
+  }
+
+  public void moveToDownPosition() {
+    moveToPosition(AlgaeSystem.Positions.down);
+  }
+
+  // Intake Motor
+
+  private void spinIntake(double speed) {
     intakeMotor.set(speed);
   }
 
-  /** Stop the intake motor */
-  public void StopIntake() {
-    intakeMotor.stopMotor();
+  public void intake() {
+    spinIntake(AlgaeSystem.MotorSpeeds.intakeSpeed);
   }
 
-  public void shutOffPivotMotor() {
-    pivotMotor.stopMotor();
+  public void output() {
+    spinIntake(AlgaeSystem.MotorSpeeds.outputSpeed);
   }
 
-  public void shutOffIntakeMotor() {
+  public void shoot() {
+    spinIntake(AlgaeSystem.MotorSpeeds.shootSpeed);
+  }
+
+  public void stop() {
     intakeMotor.stopMotor();
   }
 }

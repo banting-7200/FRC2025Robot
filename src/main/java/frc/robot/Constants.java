@@ -21,6 +21,12 @@ public final class Constants {
   }
 
   public final class Elevator {
+    public static final double reZeroSpeed = 0;
+
+    public final class IDs{
+        public static final int bottomLimitSwitchID = 2;
+        public static final int topLimitSwitchID = 3;
+    }
 
     public final class MotorConfig {
       public static final boolean inverted = true;
@@ -43,14 +49,16 @@ public final class Constants {
       public static double algaeOne = 0;
       public static double algaeTwo = 0;
       public static double floorLevel = 0;
+      public static double net = 0;
       public static double carry = 0;
     }
   }
 
-  public final class algaeSystem {
+  public final class AlgaeSystem {
     public final class MotorSpeeds {
-      public static final double intakeSpeed = 1; // Should be positive //
-      public static final double outputSpeed = 1; // Should be positive //
+      public static final double intakeSpeed = 1;
+      public static final double outputSpeed = -1;
+      public static final double shootSpeed = -1;
     }
 
     public final class PID {
@@ -60,15 +68,16 @@ public final class Constants {
     }
 
     public final class Positions {
-      public static final double armUp = 0;
-      public static final double armDown = 0;
+      public static final double up = 0;
+      public static final double down = 0;
+      public static final double shoot = 0;
       public static final double safetyRange =
-          0; // safteyRange is the range that the algae motor has to be within for the other arm to
+          5; // safteyRange is the range that the algae motor has to be within for the other arm to
       // be able to move up
     }
   }
 
-  public final class coralSystem {
+  public final class CoralSystem {
     public final class MotorSpeeds {
       public static final double intakeSpeed = 1;
       public static final double outputSpeed = -1;
@@ -78,7 +87,7 @@ public final class Constants {
       public static final double carry = 0;
       public static final double intake = 0;
       public static final double dropOff = 0;
-      public static final double safetyRange = 40; // TODO: please tune!!!!
+      public static final double safetyRange = 5; // TODO: please tune!!!!
       // safteyRange is the range that the arm motors have to be within for the other arm to be able
       // to move//
     }
@@ -135,21 +144,23 @@ public final class Constants {
       public static final double rightYDeadband = 0.1;
       public static final int zeroSwerveDriveButton = XboxController.Button.kA.value;
       public static final int enableCreepDrive = XboxController.Axis.kLeftTrigger.value;
+      public static final int switchTestMode = XboxController.Button.kY.value;
     }
 
     public final class ButtonBox {
-      public static final int port = 1;
+      // assuming port count starts at zero, increase all ints by 1 if starts by 1
+      public static final int port = 11111; // unkown referance
       public static final int elevatorManualLift = 10;
-      public static final int elevatorManualFall = 11;
-      public static final int coralManualRotateLeft = 11;
-      public static final int coralManualRotateRight = 11;
-      public static final int intake = 11;
-      public static final int output = 11;
-      public static final int floorLevelButton = 11;
-      public static final int level1Button = 11;
-      public static final int level2Button = 11;
-      public static final int level3Button = 11;
-      public static final int level4Button = 11;
+      public static final int elevatorManualFall = 9;
+      public static final int coralManualRotateLeft = 8;
+      public static final int coralManualRotateRight = 7;
+      public static final int intake = 6;
+      public static final int output = 5;
+      public static final int floorLevelButton = 4;
+      public static final int level1Button = 3;
+      public static final int level2Button = 2;
+      public static final int level3Button = 1;
+      public static final int level4Button = 0;
       public static final int gamePieceSwitch = 11;
     }
   }
@@ -166,5 +177,12 @@ public final class Constants {
     public static final int algaePivotID = 0;
     public static final int algaeIntakeID = 0;
     public static final int climberID = 0;
+  }
+
+  public final class CommandTimes {
+    public static final int algaeIntakeTime = 2000;
+    public static final int algaeShootTime = 2000;
+    public static final int coralIntakeTime = 2000;
+    public static final int coralShootTime = 2000;
   }
 }
