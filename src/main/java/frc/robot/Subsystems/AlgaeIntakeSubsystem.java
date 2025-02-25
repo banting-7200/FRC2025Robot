@@ -53,7 +53,6 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
     intakeRLimitSwitch = intakeMotor.getReverseLimitSwitch();
   }
 
-
   public boolean hasReachedSetpoint() {
     double acceptableRange = 5;
     return Math.abs(pivotEncoder.getPosition() - setpoint) <= acceptableRange;
@@ -64,7 +63,7 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
   }
 
   public void run() {
-      pidController.setReference(setpoint, ControlType.kPosition);
+    pidController.setReference(setpoint, ControlType.kPosition);
   }
 
   public boolean hasAlgae() {
@@ -85,7 +84,7 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
     pivotMotor.stopMotor();
   }
 
-  public void shutOffIntakeMotor(){
+  public void shutOffIntakeMotor() {
     intakeMotor.stopMotor();
   }
 }

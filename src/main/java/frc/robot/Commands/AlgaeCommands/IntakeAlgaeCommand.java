@@ -17,7 +17,8 @@ public class IntakeAlgaeCommand extends Command {
 
   @Override
   public void execute() {
-    algaeController.spinIntake(algaeSystem.MotorSpeeds.intakeSpeed);;
+    algaeController.spinIntake(algaeSystem.MotorSpeeds.intakeSpeed);
+    ;
   }
 
   @Override
@@ -26,7 +27,7 @@ public class IntakeAlgaeCommand extends Command {
   }
 
   @Override
-  public void end(boolean intrupted){
+  public void end(boolean intrupted) {
     algaeController.StopIntake();
   }
 }

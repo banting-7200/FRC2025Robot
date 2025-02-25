@@ -26,7 +26,7 @@ public class IntakeCoralCommand extends Command {
   }
 
   @Override
-  public void end(boolean interupted){
+  public void end(boolean interupted) {
     coralController.stopIntake();
   }
 }
