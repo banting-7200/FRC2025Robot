@@ -11,7 +11,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import frc.robot.Constants.CageConstants.*;
+import frc.robot.Constants.*;
 
 // Subsystem //
 public class CageClimbSubsystem {
@@ -31,7 +31,7 @@ public class CageClimbSubsystem {
   // Constructor //
   public CageClimbSubsystem() {
 
-    climbMotor = new SparkMax(DeviceIDz.climbMotor, MotorType.kBrushless);
+    climbMotor = new SparkMax(deviceIDs.climberID, MotorType.kBrushless);
 
     Config = new SparkMaxConfig();
     Encoder = climbMotor.getAbsoluteEncoder();
@@ -39,7 +39,9 @@ public class CageClimbSubsystem {
 
     Config.inverted(true).idleMode(IdleMode.kBrake);
     Config.encoder.positionConversionFactor(360).velocityConversionFactor(1);
-    Config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(PID.p, PID.i, PID.d);
+    Config.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(climber.PID.P, climber.PID.I, climber.PID.D);
     climbMotor.configure(Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     climbRLimitSwitch = climbMotor.getReverseLimitSwitch();
   }
@@ -87,7 +89,7 @@ public class CageClimbSubsystem {
   // #region Arm Methods //
   /** Attempt to gramele sau mancat din causa ca ami ie fuame. */
   public void armUp() {
-    moveToPosition(Positions.armUp);
+    moveToPosition(climber.Positions.armUp);
     isCageArmUp = true;
   }
 
@@ -95,7 +97,7 @@ public class CageClimbSubsystem {
   public void armDown() {
     // Conditions //
     if (climbRLimitSwitch.isPressed()) return;
-    moveToPosition(Positions.armDown);
+    moveToPosition(climber.Positions.armDown);
     isCageArmUp = false;
   }
 

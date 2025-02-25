@@ -6,19 +6,12 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 
 public final class Constants {
-  public final class CageConstants {
-    public final class Input {
-      public static final int toggleCage = 0;
-    }
-
-    public final class DeviceIDz {
-      public static final int climbMotor = 0;
-    }
+  public final class climber {
 
     public final class PID {
-      public static final double p = 0;
-      public static final double i = 0;
-      public static final double d = 0;
+      public static final double P = 0;
+      public static final double I = 0;
+      public static final double D = 0;
     }
 
     public final class Positions {
@@ -28,27 +21,18 @@ public final class Constants {
   }
 
   public final class Elevator {
-    public static boolean mode = false; // Coral is false, Algae is true //
-
-    public final class Input { // TODO: Improve Names //
-      public static int floorLevel = 0;
-      public static int levelOne = 0;
-      public static int levelTwo = 0;
-      public static int levelThree = 0;
-      public static int levelFour = 0;
-    }
 
     public final class MotorConfig {
-      public static final boolean inverted = false;
+      public static final boolean inverted = true;
       public static final int canID = 1;
       public static final double positionConversionFactor = 360;
       public static final double velocityConversionFactor = 1;
     }
 
     public final class PID {
-      public static double p = 0.7;
-      public static final double i = 0;
-      public static final double d = 0;
+      public static double P = 0.7;
+      public static final double I = 0;
+      public static final double D = 0;
     }
 
     public final class Positions {
@@ -63,21 +47,16 @@ public final class Constants {
     }
   }
 
-  public final class Algae {
+  public final class algaeSystem {
     public final class MotorSpeeds {
       public static final double intakeSpeed = 1; // Should be positive //
       public static final double outputSpeed = 1; // Should be positive //
     }
 
-    public final class DeviceIDs {
-      public static final int intakeMotor = 0;
-      public static final int pivotMotor = 1;
-    }
-
     public final class PID {
-      public static final double p = 0;
-      public static final double i = 0;
-      public static final double d = 0;
+      public static final double P = 0;
+      public static final double I = 0;
+      public static final double D = 0;
     }
 
     public final class Positions {
@@ -87,39 +66,12 @@ public final class Constants {
           0; // safteyRange is the range that the algae motor has to be within for the other arm to
       // be able to move up
     }
-
-    public final class Input {
-      public static final int intake = 0;
-      public static final int output = 0;
-
-      public static final int armUp = 0;
-      public static final int armDown = 0;
-      public static final int toggleArm = 0; // Toggles Arm to go up or down
-      public static final int armArticulateUp = 0;
-      public static final int armArticulateDown = 0;
-    }
   }
 
-  public final class Coral {
-    public final class Input {
-      public static final int intake = 0;
-      public static final int output = 0;
-      public static final int carryPosition = 0;
-      public static final int intakePosition = 0;
-      public static final int dropOffPosition = 0;
-
-      public static final int armArticulateUp = 0;
-      public static final int armArticulateDown = 0;
-    }
-
+  public final class coralSystem {
     public final class MotorSpeeds {
       public static final double intakeSpeed = 1;
       public static final double outputSpeed = -1;
-    }
-
-    public final class DeviceIDs {
-      public static final int intakeMotor = 0;
-      public static final int pivotMotor = 1;
     }
 
     public final class Positions {
@@ -132,9 +84,9 @@ public final class Constants {
     }
 
     public final class PID {
-      public static final double p = 0;
-      public static final double i = 0;
-      public static final double d = 0;
+      public static final double P = 0;
+      public static final double I = 0;
+      public static final double D = 0;
     }
   }
 
@@ -186,12 +138,33 @@ public final class Constants {
     }
 
     public final class ButtonBox {
-      public static final int port = 0;
+      public static final int port = 1;
+      public static final int elevatorManualLift = 10;
+      public static final int elevatorManualFall = 11;
+      public static final int coralManualRotateLeft = 11;
+      public static final int coralManualRotateRight = 11;
+      public static final int intake = 11;
+      public static final int output = 11;
+      public static final int floorLevelButton = 11;
+      public static final int level1Button = 11;
+      public static final int level2Button = 11;
+      public static final int level3Button = 11;
+      public static final int level4Button = 11;
+      public static final int gamePieceSwitch = 11;
     }
   }
 
   public final class Configurations {
     public static final int lightPort = 0;
     public static final int lightCount = 50;
+  }
+
+  public final class deviceIDs {
+    public static final int elevatorID = 0;
+    public static final int coralPivotID = 0;
+    public static final int coralIntakeID = 0;
+    public static final int algaePivotID = 0;
+    public static final int algaeIntakeID = 0;
+    public static final int climberID = 0;
   }
 }

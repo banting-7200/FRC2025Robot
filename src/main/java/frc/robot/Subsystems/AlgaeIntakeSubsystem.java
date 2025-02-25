@@ -13,131 +13,67 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.Constants.Algae.*;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.*;
 
 // Subsystem //
-public class AlgaeIntakeSubsystem {
-  // Singleton //
-  private static AlgaeIntakeSubsystem instance;
-  // Subsystems //
-  public CoralIntakeSubsystem coralArm;
-  // Instance Data //
-  public double setPoint;
-  public boolean isUp;
-  // Motors //
+public class AlgaeIntakeSubsystem extends SubsystemBase {
+  public double setpoint;
+  public boolean isArmUp;
   public SparkMax pivotMotor;
   public SparkMax intakeMotor;
-  // Motor Config //
   public SparkMaxConfig pivotConfig = new SparkMaxConfig();
-  // Pivot Components //
   public SparkAbsoluteEncoder pivotEncoder;
   public SparkClosedLoopController pidController;
-  // Limit Switches //
+
   public SparkLimitSwitch pivotFLimitSwitch;
   public SparkLimitSwitch pivotRLimitSwitch;
   public SparkLimitSwitch intakeRLimitSwitch;
 
-  // Constructor //
-  private AlgaeIntakeSubsystem() {
-    // Init Motors //
-    pivotMotor = new SparkMax(DeviceIDs.pivotMotor, MotorType.kBrushless);
-    intakeMotor = new SparkMax(DeviceIDs.intakeMotor, MotorType.kBrushless);
-    // Init Pivot Components //
+  public boolean hasAlgae;
+
+  public AlgaeIntakeSubsystem() {
+
+    pivotMotor = new SparkMax(deviceIDs.algaePivotID, MotorType.kBrushless);
+    intakeMotor = new SparkMax(deviceIDs.algaeIntakeID, MotorType.kBrushless);
     pivotEncoder = pivotMotor.getAbsoluteEncoder();
     pidController = pivotMotor.getClosedLoopController();
-    // Configure Pivot Motor //
     pivotConfig.inverted(true).idleMode(IdleMode.kBrake);
     pivotConfig.encoder.positionConversionFactor(1000).velocityConversionFactor(1000);
-    pivotConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(PID.p, PID.i, PID.d);
+    pivotConfig
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(algaeSystem.PID.P, algaeSystem.PID.I, algaeSystem.PID.D);
 
     pivotMotor.configure(
         pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    // Limit Switches //
+
     pivotFLimitSwitch = pivotMotor.getForwardLimitSwitch();
     pivotRLimitSwitch = pivotMotor.getReverseLimitSwitch();
     intakeRLimitSwitch = intakeMotor.getReverseLimitSwitch();
-    // Update Singleton //
-    coralArm = CoralIntakeSubsystem.getInstance();
-    // Update Singleton //
-    instance = this;
   }
 
-  public static synchronized AlgaeIntakeSubsystem getInstance() {
-    if (instance == null) return new AlgaeIntakeSubsystem();
-    return instance;
+
+  public boolean hasReachedSetpoint() {
+    double acceptableRange = 5;
+    return Math.abs(pivotEncoder.getPosition() - setpoint) <= acceptableRange;
   }
 
-  // #region Base Methods //
-
-  /**
-   * Checks whether the Algae arm is low enough to move the coral arm
-   *
-   * @return Whether it's safe to move the coral arm
-   */
-  public boolean IsDown() {
-    // Calculate //
-    boolean isInPlace =
-        pivotEncoder.getPosition() >= Positions.armDown - Positions.safetyRange
-            && pivotEncoder.getPosition() <= Positions.armDown + Positions.safetyRange;
-    // Return //
-    return isInPlace;
+  public void moveToPosition(double setpoint) {
+    this.setpoint = setpoint;
   }
 
-  /**
-   * Sets the target angle of the motor
-   *
-   * @param setPoint The angle
-   */
-  public void moveToPosition(double setPoint) {
-    this.setPoint = setPoint;
-  }
-
-  /**
-   * Gets the target angle of the motor
-   *
-   * @return the current angle of the motor
-   */
-  public double getSetPoint() {
-    return setPoint;
-  }
-
-  /**
-   * Gets the precise angle of the motor right now
-   *
-   * @return The angle of the motor
-   */
-  public double getPosition() {
-    return pivotEncoder.getPosition();
-  }
-
-  /** Update method */
   public void run() {
-    // Settings //
-    if (pivotEncoder.getPosition() > Positions.armUp + 2
-        && pivotEncoder.getPosition() < Positions.armDown - 2) {
-      pidController.setReference(setPoint, ControlType.kPosition);
-    } else {
-      pivotMotor.stopMotor();
-    }
+      pidController.setReference(setpoint, ControlType.kPosition);
   }
 
   public boolean hasAlgae() {
-    return intakeRLimitSwitch.isPressed();
+    hasAlgae = intakeRLimitSwitch.isPressed();
+    return hasAlgae;
   }
 
-  // #endregion
-  // #region Action Methods //
-  /** Intake Algae */
-  public void Intake() {
-    // Begin Intake //
-    intakeMotor.set(-MotorSpeeds.intakeSpeed);
-    // Wait Till Successful Intake //
-    new WaitUntilCommand(intakeRLimitSwitch::isPressed)
-        .andThen(
-            () -> {
-              StopIntake();
-            });
+  public void spinIntake(double speed) {
+    intakeMotor.set(speed);
   }
 
   /** Stop the intake motor */
@@ -145,64 +81,11 @@ public class AlgaeIntakeSubsystem {
     intakeMotor.stopMotor();
   }
 
-  /** Spit out algae */
-  public void Output() {
-    intakeMotor.set(MotorSpeeds.outputSpeed);
-  }
-
-  // Arm Controls //
-  /** Moves the arm up */
-  public void armUp() {
-    new WaitUntilCommand(coralArm::isAtCarryPosition)
-        .unless(this::hasAlgae)
-        .andThen(
-            () -> { // Move The Algae Arm to Carry Position //
-              moveToPosition(Positions.armUp);
-              // Update Values //
-              isUp = true;
-            });
-  }
-
-  /** Moves the arm down */
-  public void armDown() {
-    moveToPosition(Positions.armDown);
-    isUp = false;
-  }
-
-  /** Toggles between arm up and arm down */
-  public void armToggle() {
-    // Checks //
-    if (isUp) armDown();
-    else armUp();
-  }
-
-  /** Checks whether Coral Arm is ready for Algae Arm to move up, if not then get coral arm ready */
-  public void checkCoralArm() {
-    // Data //
-    boolean isCoralArmReady = coralArm.isAtCarryPosition();
-    // Conditions //
-    if (isCoralArmReady) return;
-    // Move To Carrying Position //
-    coralArm.moveToCarry();
-  }
-
-  // #endregion //
-  public void algaeArmArticulateUp() { // Up is positive + //
-    // Conditions //
-    if (pivotFLimitSwitch.isPressed()) return;
-    // Settings //
-    setPoint += 0.01;
-  }
-
-  public void algaeArmArticulateDown() { // Down is negative - //
-
-    // Conditions //
-    if (pivotRLimitSwitch.isPressed()) return;
-    // Settings //
-    setPoint -= 0.01;
-  }
-
-  public void algaeArmArticulateOff() {
+  public void shutOffPivotMotor() {
     pivotMotor.stopMotor();
+  }
+
+  public void shutOffIntakeMotor(){
+    intakeMotor.stopMotor();
   }
 }

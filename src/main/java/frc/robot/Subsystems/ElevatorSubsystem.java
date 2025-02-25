@@ -17,112 +17,45 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import frc.robot.Constants.DriveBase;
-import frc.robot.Constants.Elevator;
-import frc.robot.Constants.Elevator.*;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.*;
 
 // Subsystem //
-public class ElevatorSubsystem {
-  // Singleton //
-  private static ElevatorSubsystem instance;
-  // Instance Data //
-
-  // Motors //
+public class ElevatorSubsystem extends SubsystemBase {
   SparkMax liftMotor;
   SparkMaxConfig config;
-  // Encoder //
   SparkAbsoluteEncoder encoder;
   double setPoint;
-  // PID //
   SparkClosedLoopController pidController;
 
-  // Constructors //
-  private ElevatorSubsystem() {
-    // Init Static Data //
-    instance = this;
-    // Init Motor //
-    liftMotor = new SparkMax(MotorConfig.canID, MotorType.kBrushless);
+  public ElevatorSubsystem() {
+    liftMotor = new SparkMax(deviceIDs.elevatorID, MotorType.kBrushless);
     config = new SparkMaxConfig();
-
-    // Motor Configuration //
-    config.inverted(MotorConfig.inverted).idleMode(IdleMode.kBrake);
+    config.inverted(Elevator.MotorConfig.inverted).idleMode(IdleMode.kBrake);
     config
         .encoder
-        .positionConversionFactor(MotorConfig.positionConversionFactor)
-        .velocityConversionFactor(MotorConfig.velocityConversionFactor);
-    config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(PID.p, PID.i, PID.d);
-    // Encoder //
+        .positionConversionFactor(Elevator.MotorConfig.positionConversionFactor)
+        .velocityConversionFactor(Elevator.MotorConfig.velocityConversionFactor);
+    config
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(Elevator.PID.P, Elevator.PID.I, Elevator.PID.D);
     encoder = liftMotor.getAbsoluteEncoder();
-    // PID //
     pidController = liftMotor.getClosedLoopController();
-    // Configurations //
     liftMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
 
-  // #region Static Methods //
-  /**
-   * Gets the Subystem
-   *
-   * @return The Elevator Subsystem
-   */
-  public static synchronized ElevatorSubsystem getInstance() {
-    return instance == null ? new ElevatorSubsystem() : instance;
-  }
-
-  // #endregion
-  // #region Base Methods //
-  /**
-   * Returns the height of the elevator
-   *
-   * @return The height of the elevator
-   */
-  public double getCurrentPosition() {
-    return encoder.getPosition();
-  }
-
-  public double getSetPoint() {
-    return setPoint;
-  }
-
-  /**
-   * Moves the elevator to a specific position
-   *
-   * @param position The position to move to
-   */
-  public void moveToPosition(double position) {
-    // Checks //
-    if (position > Elevator.Positions.coralTwo)
-      DriveBase.TranslationPID.p = DriveBase.TranslationPID.slowP;
-    else DriveBase.TranslationPID.p = DriveBase.TranslationPID.normalP;
-    // Settings //
-    setPoint = position;
-  }
-
-  public void moveToCarry() {
-    moveToPosition(Positions.carry);
-  }
-
-  // #endregion //
-
-  // #region Coral Methods //
-
-  // #endregion
-  // #region Level Methods //
-
-  // #endregion //
-  // #region Action Methods //
-  public boolean switchMode() {
-    return Elevator.mode = !Elevator.mode;
+  public void moveToPosition(double setPoint) {
+    this.setPoint = setPoint;
   }
 
   public void run() {
     pidController.setReference(setPoint, ControlType.kPosition);
   }
 
-  // #endregion
-
-  public void moveToFloor() {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'moveToFloor'");
+  public boolean hasReachedSetpoint() {
+    return false;
   }
+
+  public void zeroEncoder() {}
 }

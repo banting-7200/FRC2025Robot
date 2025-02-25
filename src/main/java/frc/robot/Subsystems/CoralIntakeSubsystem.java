@@ -13,23 +13,13 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.Constants.Coral.*;
-import frc.robot.RobotContainer;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.*;
 
 // Subsystem //
-public class CoralIntakeSubsystem {
-  // Singleton //
-  public static CoralIntakeSubsystem instance;
-  // Input //
-  Joystick buttonBox = RobotContainer.getInstance().buttonBox;
-  // Subsystems //
-  AlgaeIntakeSubsystem algaeArm;
-  // Motors //
+public class CoralIntakeSubsystem extends SubsystemBase {
   SparkMax pivotMotor;
   SparkMax intakeMotor;
-  // Motor Data //
   SparkAbsoluteEncoder encoder;
   SparkClosedLoopController pidController;
   SparkMaxConfig config;
@@ -37,142 +27,52 @@ public class CoralIntakeSubsystem {
   SparkLimitSwitch pivotFLimitSwitch;
   SparkLimitSwitch pivotRLimitSwitch;
   SparkLimitSwitch intakeRLimitSwitch;
-  // Data //
-  private double setPoint = Positions.carry;
+  public double setpoint = coralSystem.Positions.carry;
+  public boolean hasCoral;
 
-  // Constructor //
   public CoralIntakeSubsystem() {
-    // Init Motors //
-    pivotMotor = new SparkMax(DeviceIDs.pivotMotor, MotorType.kBrushless);
-    intakeMotor = new SparkMax(DeviceIDs.intakeMotor, MotorType.kBrushless);
-    // Init Config //
+    pivotMotor = new SparkMax(deviceIDs.coralPivotID, MotorType.kBrushless);
+    intakeMotor = new SparkMax(deviceIDs.coralIntakeID, MotorType.kBrushless);
     config = new SparkMaxConfig();
-    // Init Encoder //
     encoder = pivotMotor.getAbsoluteEncoder();
-    // Init PID //
     pidController = pivotMotor.getClosedLoopController();
-    // Setup Config //
     config.inverted(true).idleMode(IdleMode.kBrake);
     config.encoder.positionConversionFactor(360).velocityConversionFactor(1);
-    config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder).pid(PID.p, PID.i, PID.d);
+    config
+        .closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(coralSystem.PID.P, coralSystem.PID.I, coralSystem.PID.D);
     pivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    // Limit Switches //
     pivotFLimitSwitch = pivotMotor.getForwardLimitSwitch();
     pivotRLimitSwitch = pivotMotor.getReverseLimitSwitch();
+
     intakeRLimitSwitch = intakeMotor.getForwardLimitSwitch();
-    // Get Algae Intake Subsystem //
-    algaeArm = AlgaeIntakeSubsystem.getInstance();
-    // Singleton //
-    instance = this;
   }
 
-  public static synchronized CoralIntakeSubsystem getInstance() {
-    // If no instance previously made then create one //
-    if (instance == null) return new CoralIntakeSubsystem();
-    // Return Instance //
-    return instance;
+  public void moveToPosition(double setpoint) {
+    this.setpoint = setpoint;
   }
 
-  // #region Base Methods //
-  public void moveToPosition(double setPoint) {
-    this.setPoint = setPoint;
-  }
-
-  public double getSetPoint() {
-    return setPoint;
-  }
-
-  public double getPosition() {
-    return encoder.getPosition();
+  public boolean hasReachedSetpoint() {
+    double acceptableRange = 5;
+    return Math.abs(encoder.getPosition() - setpoint) <= acceptableRange;
   }
 
   public void run() {
-
-    // Input //
-    boolean armArticulateDownPressed = buttonBox.getRawButton(Input.armArticulateDown);
-    boolean armArticulateUpPressed = buttonBox.getRawButton(Input.armArticulateUp);
-    // Checks //
-    if (armArticulateDownPressed) coralArticulateDown();
-    if (armArticulateUpPressed) coralArticulateUp();
-
-    if (encoder.getPosition() > Positions.intake + 2
-        && encoder.getPosition() < Positions.dropOff - 2) {
-      pidController.setReference(setPoint, ControlType.kPosition);
-    } else {
-      pivotMotor.stopMotor();
-    }
-  }
-
-  public boolean isAtCarryPosition() {
-    double pivotPosition = getPosition();
-
-    return pivotPosition >= Positions.carry - Positions.safetyRange / 2
-        && pivotPosition <= Positions.carry + Positions.safetyRange / 2;
-  }
-
-  // #endregion
-  // #region Level Methods //
-  /** Moves the Coral arm to the intake position */
-  public void moveToIntake() { // right from our view
-    // Wait Until Arm is Down //
-    new WaitUntilCommand(algaeArm::IsDown)
-        .andThen(
-            () -> { // Move The Coral Arm to Intake Position //
-              moveToPosition(Positions.intake);
-            });
-  }
-
-  public void moveToCarry() { // middle
-    moveToPosition(Positions.carry);
-  }
-
-  public void moveToDropoff() { // Left from our view
-    // Wait Until Arm is Down //
-    new WaitUntilCommand(algaeArm::IsDown)
-        .andThen(
-            () -> { // Move The Coral Arm to Intake Position //
-              moveToPosition(Positions.dropOff);
-            });
+    pidController.setReference(setpoint, ControlType.kPosition);
   }
 
   public boolean hasCoral() {
-    return intakeRLimitSwitch.isPressed();
+    hasCoral = intakeRLimitSwitch.isPressed();
+    return hasCoral;
   }
 
-  // jesse we need to cook green bananas on chewsday with the fake sugar clrystals
-  // #endregion
-  // #region Action Methods //
-  public void intake() {
-    intakeMotor.set(-MotorSpeeds.intakeSpeed);
-
-    new WaitUntilCommand(intakeRLimitSwitch::isPressed)
-        .andThen(
-            () -> {
-              stopIntake();
-            });
+  public void spinIntake(double speed) {
+     intakeMotor.set(speed);
   }
 
   public void stopIntake() {
-    intakeMotor.set(0);
+    intakeMotor.stopMotor();
   }
 
-  public void output() {
-    intakeMotor.set(MotorSpeeds.outputSpeed);
-  }
-
-  // #endregion
-
-  public void coralArticulateUp() {
-    // Conditions //
-    if (pivotFLimitSwitch.isPressed()) return;
-    // Settings //
-    setPoint += 0.01;
-  }
-
-  public void coralArticulateDown() {
-    // Conditions //
-    if (pivotRLimitSwitch.isPressed()) return;
-    // Settings //
-    setPoint -= 0.01;
-  }
 }
