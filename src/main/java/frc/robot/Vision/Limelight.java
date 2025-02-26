@@ -9,6 +9,7 @@ import frc.robot.Vision.LimelightHelpers.PoseEstimate;
 public class Limelight extends SubsystemBase {
   private final String name;
   private NetworkTable mainTable = NetworkTableInstance.getDefault().getTable("limelight");
+
   public Limelight(String name) {
     this.name = name;
   }

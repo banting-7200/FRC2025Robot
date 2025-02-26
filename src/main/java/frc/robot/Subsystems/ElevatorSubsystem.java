@@ -26,6 +26,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   Encoder encoder;
   PIDController pidController;
   DigitalInput bottomLimitSwitch;
+  DigitalInput topLimitSwitch;
 
   public ElevatorSubsystem() {
     liftMotor = new SparkMax(deviceIDs.elevatorID, MotorType.kBrushless);
@@ -33,17 +34,20 @@ public class ElevatorSubsystem extends SubsystemBase {
     config.inverted(Elevator.MotorConfig.inverted).idleMode(IdleMode.kBrake);
     liftMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     encoder.setDistancePerPulse(1);
-    pidController = new PIDController(Elevator.PID.P,Elevator.PID.I,Elevator.PID.D);
+    pidController = new PIDController(Elevator.PID.P, Elevator.PID.I, Elevator.PID.D);
     pidController.setTolerance(5, 10);
     bottomLimitSwitch = new DigitalInput(Elevator.IDs.bottomLimitSwitchID);
+    topLimitSwitch = new DigitalInput(Elevator.IDs.topLimitSwitchID);
   }
 
   public void run() {
-    if(bottomLimitSwitchPressed()){
-        encoder.reset();
+    if (bottomLimitSwitchPressed()) {
+      encoder.reset();
     }
     liftMotor.set(pidController.calculate(encoder.getDistance(), setPoint));
   }
+
+  public void withinLimits() {}
 
   public void stopMotor() {
     liftMotor.stopMotor();
@@ -65,7 +69,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     return pidController.atSetpoint();
   }
 
-  public double getPosition(){
+  public double getPosition() {
     return encoder.getDistance();
   }
 }

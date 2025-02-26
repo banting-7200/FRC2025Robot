@@ -23,9 +23,9 @@ public final class Constants {
   public final class Elevator {
     public static final double reZeroSpeed = 0;
 
-    public final class IDs{
-        public static final int bottomLimitSwitchID = 2;
-        public static final int topLimitSwitchID = 3;
+    public final class IDs {
+      public static final int bottomLimitSwitchID = 2;
+      public static final int topLimitSwitchID = 3;
     }
 
     public final class MotorConfig {
