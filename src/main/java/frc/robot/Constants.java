@@ -171,12 +171,12 @@ public final class Constants {
   }
 
   public final class deviceIDs {
-    public static final int elevatorID = 0;
-    public static final int coralPivotID = 0;
-    public static final int coralIntakeID = 0;
-    public static final int algaePivotID = 0;
-    public static final int algaeIntakeID = 0;
-    public static final int climberID = 0;
+    public static final int elevatorID = 8;
+    public static final int coralPivotID = 5;
+    public static final int coralIntakeID = 6;
+    public static final int algaePivotID = 3;
+    public static final int algaeIntakeID = 4;
+    public static final int climberID = 7;
   }
 
   public final class CommandTimes {
