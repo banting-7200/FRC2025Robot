@@ -131,16 +131,18 @@ public class RobotContainer {
     enableCreepDrive.falling().ifHigh(() -> drivebase.setCreepDrive(false));
     drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
     // #endregion //
-    // #region Elevator //
-    BooleanEvent elevatorUp =
-        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.elevatorManualLift));
-    elevatorUp.ifHigh(() -> elevator.setMotorSpeed(Constants.Elevator.elevatorSpeed));
-    elevatorUp.falling().ifHigh(() -> elevator.stopMotor());
 
-    BooleanEvent elevatorDown =
-        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.elevatorManualFall));
-    elevatorDown.ifHigh(() -> elevator.setMotorSpeed(-Constants.Elevator.elevatorSpeed));
-    elevatorDown.falling().ifHigh(() -> elevator.stopMotor());
+    // BooleanEvent elevatorUp =
+    //     new BooleanEvent(loop, () ->
+    // buttonBox.getRawButton(Control.ButtonBox.elevatorManualLift));
+    // elevatorUp.ifHigh(() -> elevator.setMotorSpeed(Constants.Elevator.elevatorSpeed));
+    // elevatorUp.falling().ifHigh(() -> elevator.stopMotor());
+
+    // BooleanEvent elevatorDown =
+    //     new BooleanEvent(loop, () ->
+    // buttonBox.getRawButton(Control.ButtonBox.elevatorManualFall));
+    // elevatorDown.ifHigh(() -> elevator.setMotorSpeed(-Constants.Elevator.elevatorSpeed));
+    // elevatorDown.falling().ifHigh(() -> elevator.stopMotor());
 
     // #endregion //
     // #region Algae //
@@ -171,6 +173,42 @@ public class RobotContainer {
                 new OutputAlgaeCommand(algaeController)
                     .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.up))
                     .schedule());
+    // #region Elevator //
+    BooleanEvent zeroElevator =
+        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.reZeroElevator));
+    zeroElevator.rising().ifHigh(() -> elevator.zero());
+
+    BooleanEvent elevatorFloorLevel =
+        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.floorLevelButton));
+    elevatorFloorLevel
+        .rising()
+        .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.floorLevel).schedule());
+
+    BooleanEvent elevatorAlgaeOne =
+        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeLevel1));
+
+    elevatorAlgaeOne
+        .rising()
+        .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.algaeOne).schedule());
+
+    BooleanEvent elevatorAlgaeTwo =
+        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeLevel2));
+    elevatorAlgaeTwo
+        .rising()
+        .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.algaeTwo).schedule());
+
+    BooleanEvent elevatorAlgaeNet =
+        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeNet));
+    elevatorAlgaeNet
+        .rising()
+        .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.net).schedule());
+    // #endregion //
+    // #region Cage //
+    BooleanEvent climbUp = new BooleanEvent(loop, () -> mainController.getPOV() == 0);
+    climbUp.ifHigh(() -> cageArm.setPercent(Climber.speed));
+
+    BooleanEvent climbDown = new BooleanEvent(loop, () -> mainController.getPOV() == 180);
+    climbDown.ifHigh(() -> cageArm.setPercent(-Climber.speed));
     // #endregion //
   }
 
@@ -282,12 +320,6 @@ public class RobotContainer {
     //                     .andThen(
     //                         new MoveCoralArm(coralController, CoralSystem.Positions.dropOff))));
 
-    // BooleanEvent climbUp = new BooleanEvent(loop, () -> mainController.getPOV() == 0);
-    // climbUp.ifHigh(() -> cageArm.setPercent(Climber.speed));
-
-    // BooleanEvent climbDown = new BooleanEvent(loop, () -> mainController.getPOV() == 180);
-    // climbDown.ifHigh(() -> cageArm.setPercent(-Climber.speed));
-
     //      // #endregion //
   }
 
@@ -298,7 +330,7 @@ public class RobotContainer {
     // algaeController.run();
     // coralController.run();
     // cageArm.run();
-    // elevator.run();
+    elevator.run();
     // lights.run();
 
     // if (coralArm.hasCoral()) {

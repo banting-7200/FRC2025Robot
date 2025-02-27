@@ -13,6 +13,7 @@ public class ZeroElevator extends Command {
   public ZeroElevator(ElevatorSubsystem elevator) {
     this.elevator = elevator;
     addRequirements(elevator);
+    elevator.zero();
   }
 
   // Data //

@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Commands.AlgaeCommands.MoveAlgaeArm;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -63,7 +64,11 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    new MoveAlgaeArm(
+            RobotContainer.getInstance().algaeController, Constants.AlgaeSystem.Positions.up)
+        .schedule();
+  }
 
   /** This function is called periodically during operator control. */
   @Override

@@ -22,8 +22,9 @@ public final class Constants {
   }
 
   public final class Elevator {
-    public static final double reZeroSpeed = 0;
-    public static final double elevatorSpeed = 0.4;
+    public static final double reZeroSpeed = -0.4;
+
+    // public static final double elevatorSpeed = 0.4;
 
     public final class IDs {
       public static final int bottomLimitSwitchID = 5;
@@ -38,9 +39,9 @@ public final class Constants {
     }
 
     public final class PID {
-      public static double P = 0.7;
-      public static final double I = 0;
-      public static final double D = 0;
+      public static double P = 1.3;
+      public static final double I = 0.0;
+      public static final double D = 0.7;
     }
 
     public final class Positions {
@@ -48,12 +49,12 @@ public final class Constants {
       public static double coralTwo = 0;
       public static double coralThree = 0;
       public static double coralFour = 0;
-      public static double algaeOne = 0;
-      public static double algaeTwo = 0;
+      public static double algaeOne = 10000; // 24700
+      public static double algaeTwo = 37200;
       public static double floorLevel = 0;
       public static double net = 0;
       public static double carry = 0;
-      public static double top = 0;
+      public static double top = 50000;
       public static double safeZone = 50;
     }
   }
@@ -128,7 +129,10 @@ public final class Constants {
 
     // TODO: tune these
     public final class RotationPID {
-      public static final double p = 0.4;
+      public static final double slowP = 0.2;
+      public static final double normalP = 0.4;
+      public static double p = 0.4;
+
       public static final double i = 0;
       public static final double d = 0;
     }
@@ -160,11 +164,17 @@ public final class Constants {
       public static final int coralManualRotateRight = 8;
       public static final int intake = 7;
       public static final int output = 6;
-      public static final int floorLevelButton = 4;
+      // Coral //
       public static final int level1Button = 3;
       public static final int level2Button = 2;
       public static final int level3Button = 1;
-      public static final int level4Button = 0;
+      // Algae //
+      public static final int reZeroElevator = 5;
+      public static final int floorLevelButton = 4;
+      public static final int algaeLevel1 = 3;
+      public static final int algaeLevel2 = 2;
+      public static final int algaeNet = 1;
+
       public static final int gamePieceSwitch = 11;
     }
   }
