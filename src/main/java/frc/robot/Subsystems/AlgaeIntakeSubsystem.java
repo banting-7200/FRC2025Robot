@@ -2,7 +2,6 @@
 package frc.robot.Subsystems;
 
 // Imports //
-import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -11,6 +10,7 @@ import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.LimitSwitchConfig.Type;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,12 +19,13 @@ import frc.robot.Constants.deviceIDs;
 
 // Subsystem //
 public class AlgaeIntakeSubsystem extends SubsystemBase {
-  public double setpoint;
+  public double setpoint = AlgaeSystem.Positions.up;
   public boolean isArmUp;
   public SparkMax pivotMotor;
   public SparkMax intakeMotor;
   public SparkMaxConfig pivotConfig = new SparkMaxConfig();
-  public SparkAbsoluteEncoder pivotEncoder;
+  public SparkMaxConfig intakeConfig = new SparkMaxConfig();
+  // public SparkAbsoluteEncoder pivotEncoder;
   public SparkClosedLoopController pidController;
 
   public SparkLimitSwitch pivotFLimitSwitch;
@@ -35,17 +36,38 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
 
     pivotMotor = new SparkMax(deviceIDs.algaePivotID, MotorType.kBrushless);
     intakeMotor = new SparkMax(deviceIDs.algaeIntakeID, MotorType.kBrushless);
-    pivotEncoder = pivotMotor.getAbsoluteEncoder();
+    // pivotEncoder = pivotMotor.getAbsoluteEncoder();
     pidController = pivotMotor.getClosedLoopController();
-    pivotConfig.inverted(true).idleMode(IdleMode.kBrake);
-    pivotConfig.encoder.positionConversionFactor(360).velocityConversionFactor(1);
+
+    intakeConfig.inverted(false).idleMode(IdleMode.kBrake);
+
+    pivotConfig.inverted(false).idleMode(IdleMode.kBrake);
+    pivotConfig
+        .absoluteEncoder
+        .positionConversionFactor(360)
+        .velocityConversionFactor(1)
+        .inverted(true);
     pivotConfig
         .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         .pid(AlgaeSystem.PID.P, AlgaeSystem.PID.I, AlgaeSystem.PID.D);
+
+    pivotConfig
+        .limitSwitch
+        .forwardLimitSwitchEnabled(true)
+        .forwardLimitSwitchType(Type.kNormallyClosed)
+        .reverseLimitSwitchEnabled(true)
+        .reverseLimitSwitchType(Type.kNormallyOpen);
+
+    intakeConfig
+        .limitSwitch
+        .reverseLimitSwitchEnabled(true)
+        .reverseLimitSwitchType(Type.kNormallyClosed);
 
     pivotMotor.configure(
         pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    intakeMotor.configure(
+        intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     pivotFLimitSwitch = pivotMotor.getForwardLimitSwitch();
     pivotRLimitSwitch = pivotMotor.getReverseLimitSwitch();
@@ -53,6 +75,8 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
   }
 
   public void run() {
+    // System.out.println("trying to move to " + setpoint + " | Current position = " +
+    // getPosition());
     pidController.setReference(setpoint, ControlType.kPosition);
   }
 
@@ -67,7 +91,7 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
   }
 
   public double getPosition() {
-    return pivotEncoder.getPosition();
+    return pivotMotor.getAbsoluteEncoder().getPosition();
   }
 
   public boolean hasReachedSetpoint() {

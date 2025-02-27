@@ -5,6 +5,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -39,6 +40,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
     robotContainer.updateShuffle();
   }
 
@@ -66,9 +68,8 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    // robotContainer.teleopPeriodic();
-    // CommandScheduler.getInstance().run();
-    robotContainer.elevator.run();
+    robotContainer.teleopPeriodic();
+    // robotContainer.elevator.run();
   }
 
   /** This function is called once when the robot is disabled. */

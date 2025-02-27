@@ -20,6 +20,7 @@ public class ZeroElevator extends Command {
   @Override
   public void execute() {
     elevator.setMotorSpeed(Elevator.reZeroSpeed);
+    elevator.run();
   }
 
   @Override

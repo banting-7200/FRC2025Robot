@@ -11,6 +11,7 @@ public class MoveAlgaeArm extends Command {
     this.algaeController = algaeController;
     this.setpoint = setpoint;
     addRequirements(algaeController);
+    System.out.println("Start");
   }
 
   @Override
@@ -18,11 +19,14 @@ public class MoveAlgaeArm extends Command {
 
   @Override
   public void execute() {
+    System.out.println("moving to algae position");
     algaeController.moveToPosition(setpoint);
+    algaeController.run();
   }
 
   @Override
   public boolean isFinished() {
+    System.out.println("Done");
     return algaeController.hasReachedSetpoint();
   }
 }

@@ -44,12 +44,12 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void run() {
-    if (!bottomLimitSwitchPressed()) {
+    if (bottomLimitSwitchPressed()) {
       System.out.println("zeroing");
       encoder.reset();
     }
-    if (setPoint > getPosition() && !belowUpperLimits()) return;
-    if (setPoint < getPosition() && !aboveLowerLimits() && !zeroing) return;
+    // if (setPoint > getPosition() && !belowUpperSoftLimits()) return;
+    // if (setPoint < getPosition() && !aboveLowerSoftLimits() && !zeroing) return;
     // liftMotor.set(pidController.calculate(encoder.getDistance(), setPoint));
   }
 
@@ -58,11 +58,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     liftMotor.set(0.1);
   }
 
-  public boolean belowUpperLimits() {
+  public boolean belowUpperSoftLimits() {
     return getPosition() < Elevator.Positions.top - Elevator.Positions.safeZone;
   }
 
-  public boolean aboveLowerLimits() {
+  public boolean aboveLowerSoftLimits() {
     return getPosition() > Elevator.Positions.safeZone;
   }
 
@@ -71,10 +71,21 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean bottomLimitSwitchPressed() {
-    return bottomLimitSwitch.get();
+    return !bottomLimitSwitch.get();
+  }
+
+  public boolean topLimitSwitchPressed() {
+    return !topLimitSwitch.get();
   }
 
   public void setMotorSpeed(double speed) {
+    if (topLimitSwitchPressed() && speed > 0) {
+      liftMotor.set(0);
+      return;
+    } else if (bottomLimitSwitchPressed() && speed < 0) {
+      liftMotor.set(0);
+      return;
+    }
     liftMotor.set(speed);
   }
 
@@ -84,8 +95,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean hasReachedSetpoint() {
-   // return pidController.atSetpoint();
-   return true;
+    // return pidController.atSetpoint();
+    return true;
   }
 
   public double getPosition() {

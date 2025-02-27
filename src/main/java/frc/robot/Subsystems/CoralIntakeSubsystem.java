@@ -2,7 +2,6 @@
 package frc.robot.Subsystems;
 
 // Imports //
-import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -21,7 +20,6 @@ import frc.robot.Constants.deviceIDs;
 public class CoralIntakeSubsystem extends SubsystemBase {
   SparkMax pivotMotor;
   SparkMax intakeMotor;
-  SparkAbsoluteEncoder encoder;
   SparkClosedLoopController pidController;
   SparkMaxConfig config;
   // Limit Switches //
@@ -35,13 +33,12 @@ public class CoralIntakeSubsystem extends SubsystemBase {
     pivotMotor = new SparkMax(deviceIDs.coralPivotID, MotorType.kBrushless);
     intakeMotor = new SparkMax(deviceIDs.coralIntakeID, MotorType.kBrushless);
     config = new SparkMaxConfig();
-    encoder = pivotMotor.getAbsoluteEncoder();
     pidController = pivotMotor.getClosedLoopController();
-    config.inverted(true).idleMode(IdleMode.kBrake);
-    config.encoder.positionConversionFactor(360).velocityConversionFactor(1);
+    config.inverted(false).idleMode(IdleMode.kBrake);
+    config.absoluteEncoder.positionConversionFactor(360).velocityConversionFactor(1);
     config
         .closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
         .pid(CoralSystem.PID.P, CoralSystem.PID.I, CoralSystem.PID.D);
     pivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     pivotFLimitSwitch = pivotMotor.getForwardLimitSwitch();
@@ -65,7 +62,7 @@ public class CoralIntakeSubsystem extends SubsystemBase {
   }
 
   public double getPosition() {
-    return encoder.getPosition();
+    return pivotMotor.getAbsoluteEncoder().getPosition();
   }
 
   public boolean hasReachedSetpoint() {

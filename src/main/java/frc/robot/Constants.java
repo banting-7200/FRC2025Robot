@@ -23,14 +23,15 @@ public final class Constants {
 
   public final class Elevator {
     public static final double reZeroSpeed = 0;
+    public static final double elevatorSpeed = 0.4;
 
     public final class IDs {
-      public static final int bottomLimitSwitchID = 2;
-      public static final int topLimitSwitchID = 3;
+      public static final int bottomLimitSwitchID = 5;
+      public static final int topLimitSwitchID = 2;
     }
 
     public final class MotorConfig {
-      public static final boolean inverted = true;
+      public static final boolean inverted = false;
       public static final int canID = 1;
       public static final double positionConversionFactor = 360;
       public static final double velocityConversionFactor = 1;
@@ -59,21 +60,21 @@ public final class Constants {
 
   public final class AlgaeSystem {
     public final class MotorSpeeds {
-      public static final double intakeSpeed = 1;
-      public static final double outputSpeed = -1;
-      public static final double shootSpeed = -1;
+      public static final double intakeSpeed = -0.5;
+      public static final double outputSpeed = 1;
+      public static final double shootSpeed = 1;
     }
 
     public final class PID {
-      public static final double P = 0;
+      public static final double P = 0.009;
       public static final double I = 0;
-      public static final double D = 0;
+      public static final double D = 0.002;
     }
 
     public final class Positions {
-      public static final double up = 0;
-      public static final double down = 0;
-      public static final double shoot = 0;
+      public static final double up = 31.9;
+      public static final double down = 99.3;
+      public static final double shoot = 50;
       public static final double safetyRange =
           5; // safteyRange is the range that the algae motor has to be within for the other arm to
       // be able to move up
@@ -153,12 +154,12 @@ public final class Constants {
     public final class ButtonBox {
       // assuming port count starts at zero, increase all ints by 1 if starts by 1
       public static final int port = 1; // unkown referance
-      public static final int elevatorManualLift = 10;
-      public static final int elevatorManualFall = 9;
-      public static final int coralManualRotateLeft = 8;
-      public static final int coralManualRotateRight = 7;
-      public static final int intake = 6;
-      public static final int output = 5;
+      public static final int elevatorManualLift = 11;
+      public static final int elevatorManualFall = 10;
+      public static final int coralManualRotateLeft = 9;
+      public static final int coralManualRotateRight = 8;
+      public static final int intake = 7;
+      public static final int output = 6;
       public static final int floorLevelButton = 4;
       public static final int level1Button = 3;
       public static final int level2Button = 2;

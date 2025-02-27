@@ -19,6 +19,7 @@ public class MoveElevator extends Command {
   @Override
   public void execute() {
     elevator.moveToPosition(setpoint);
+    elevator.run();
   }
 
   @Override
