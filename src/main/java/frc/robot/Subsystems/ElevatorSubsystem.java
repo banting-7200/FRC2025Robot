@@ -28,11 +28,14 @@ public class ElevatorSubsystem extends SubsystemBase {
   DigitalInput bottomLimitSwitch;
   DigitalInput topLimitSwitch;
 
+  boolean zeroing = true;
+
   public ElevatorSubsystem() {
     liftMotor = new SparkMax(deviceIDs.elevatorID, MotorType.kBrushless);
     config = new SparkMaxConfig();
     config.inverted(Elevator.MotorConfig.inverted).idleMode(IdleMode.kBrake);
     liftMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    encoder = new Encoder(0, 1);
     encoder.setDistancePerPulse(1);
     pidController = new PIDController(Elevator.PID.P, Elevator.PID.I, Elevator.PID.D);
     pidController.setTolerance(5, 10);
@@ -41,12 +44,18 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void run() {
-    if (bottomLimitSwitchPressed()) {
+    if (!bottomLimitSwitchPressed()) {
+      System.out.println("zeroing");
       encoder.reset();
     }
     if (setPoint > getPosition() && !belowUpperLimits()) return;
-    if (setPoint < getPosition() && !aboveLowerLimits()) return;
-    liftMotor.set(pidController.calculate(encoder.getDistance(), setPoint));
+    if (setPoint < getPosition() && !aboveLowerLimits() && !zeroing) return;
+    // liftMotor.set(pidController.calculate(encoder.getDistance(), setPoint));
+  }
+
+  public void zero() {
+    zeroing = true;
+    liftMotor.set(0.1);
   }
 
   public boolean belowUpperLimits() {
@@ -70,6 +79,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void moveToPosition(double setPoint) {
+    zeroing = false;
     this.setPoint = setPoint;
   }
 

@@ -52,6 +52,8 @@ public final class Constants {
       public static double floorLevel = 0;
       public static double net = 0;
       public static double carry = 0;
+      public static double top = 0;
+      public static double safeZone = 50;
     }
   }
 
@@ -150,7 +152,7 @@ public final class Constants {
 
     public final class ButtonBox {
       // assuming port count starts at zero, increase all ints by 1 if starts by 1
-      public static final int port = 11111; // unkown referance
+      public static final int port = 1; // unkown referance
       public static final int elevatorManualLift = 10;
       public static final int elevatorManualFall = 9;
       public static final int coralManualRotateLeft = 8;

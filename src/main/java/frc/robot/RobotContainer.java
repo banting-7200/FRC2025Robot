@@ -301,8 +301,8 @@ public class RobotContainer {
     shuffle.setLayout("Elevator", 1, 2);
     shuffle.setNumber("Height", elevator.getPosition());
     shuffle.setLayout("Limelight", 1, 3);
-    shuffle.setNumber("Tag Horizontal", limelight.getHorizontalMetres());
-    shuffle.setNumber("Tag Distance", limelight.getDistanceMetres());
-    shuffle.setNumber("Tag Rotation", limelight.getRotationDegrees());
+    // shuffle.setNumber("Tag Horizontal", limelight.getHorizontalMetres());
+    // shuffle.setNumber("Tag Distance", limelight.getDistanceMetres());
+    // shuffle.setNumber("Tag Rotation", limelight.getRotationDegrees());
   }
 }
