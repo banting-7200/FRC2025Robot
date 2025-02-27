@@ -44,10 +44,18 @@ public class ElevatorSubsystem extends SubsystemBase {
     if (bottomLimitSwitchPressed()) {
       encoder.reset();
     }
+    if (setPoint > getPosition() && !belowUpperLimits()) return;
+    if (setPoint < getPosition() && !aboveLowerLimits()) return;
     liftMotor.set(pidController.calculate(encoder.getDistance(), setPoint));
   }
 
-  public void withinLimits() {}
+  public boolean belowUpperLimits() {
+    return getPosition() < Elevator.Positions.top - Elevator.Positions.safeZone;
+  }
+
+  public boolean aboveLowerLimits() {
+    return getPosition() > Elevator.Positions.safeZone;
+  }
 
   public void stopMotor() {
     liftMotor.stopMotor();
