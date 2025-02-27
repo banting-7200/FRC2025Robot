@@ -61,7 +61,7 @@ public class RobotContainer {
     limelight = new Limelight("Limelight");
     coralController = new CoralIntakeSubsystem();
     algaeController = new AlgaeIntakeSubsystem();
-    cageArm = new CageClimbSubsystem();
+    cageArm = CageClimbSubsystem.getInstance();
     elevator = new ElevatorSubsystem();
     shuffle = ShuffleboardSubsystem.getInstance();
     drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
@@ -253,6 +253,12 @@ public class RobotContainer {
                         .andThen(
                             new MoveCoralArm(coralController, CoralSystem.Positions.dropOff))));
 
+    BooleanEvent climbUp = new BooleanEvent(loop, () -> mainController.getPOV() == 0);
+    climbUp.ifHigh(() -> cageArm.setPercent(Climber.speed));
+
+    BooleanEvent climbDown = new BooleanEvent(loop, () -> mainController.getPOV() == 180);
+    climbDown.ifHigh(() -> cageArm.setPercent(-Climber.speed));
+
     //      // #endregion //
 
   }
@@ -263,7 +269,7 @@ public class RobotContainer {
 
     algaeController.run();
     coralController.run();
-    cageArm.run();
+    // cageArm.run();
     elevator.run();
     // lights.run();
 
@@ -292,9 +298,11 @@ public class RobotContainer {
     shuffle.setLayout("Coral", 1, 3);
     shuffle.setBoolean("Has Coral", coralController.hasCoral());
     shuffle.setNumber("Angle", coralController.getPosition());
-    shuffle.setLayout("Climb", 1, 2);
-    shuffle.setBoolean("Deployed", cageArm.isUp());
     shuffle.setLayout("Elevator", 1, 2);
     shuffle.setNumber("Height", elevator.getPosition());
+    shuffle.setLayout("Limelight", 1, 3);
+    // shuffle.setNumber("Tag Horizontal", limelight.getHorizontalMetres());
+    // shuffle.setNumber("Tag Distance", limelight.getDistanceMetres());
+    // shuffle.setNumber("Tag Rotation", limelight.getRotationDegrees());
   }
 }

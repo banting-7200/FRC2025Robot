@@ -28,6 +28,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   DigitalInput bottomLimitSwitch;
   DigitalInput topLimitSwitch;
 
+  boolean zeroing = true;
+
   public ElevatorSubsystem() {
     liftMotor = new SparkMax(deviceIDs.elevatorID, MotorType.kBrushless);
     config = new SparkMaxConfig();
@@ -42,13 +44,27 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void run() {
-    if (bottomLimitSwitchPressed()) {
+    if (!bottomLimitSwitchPressed()) {
+      System.out.println("zeroing");
       encoder.reset();
     }
-   // liftMotor.set(pidController.calculate(encoder.getDistance(), setPoint));
+    if (setPoint > getPosition() && !belowUpperLimits()) return;
+    if (setPoint < getPosition() && !aboveLowerLimits() && !zeroing) return;
+    // liftMotor.set(pidController.calculate(encoder.getDistance(), setPoint));
   }
 
-  public void withinLimits() {}
+  public void zero() {
+    zeroing = true;
+    liftMotor.set(0.1);
+  }
+
+  public boolean belowUpperLimits() {
+    return getPosition() < Elevator.Positions.top - Elevator.Positions.safeZone;
+  }
+
+  public boolean aboveLowerLimits() {
+    return getPosition() > Elevator.Positions.safeZone;
+  }
 
   public void stopMotor() {
     liftMotor.stopMotor();
@@ -63,6 +79,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void moveToPosition(double setPoint) {
+    zeroing = false;
     this.setPoint = setPoint;
   }
 

@@ -6,7 +6,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 
 public final class Constants {
-  public final class climber {
+  public final class Climber {
+    public static final double speed = 0.1;
 
     public final class PID {
       public static final double P = 0;
@@ -51,6 +52,8 @@ public final class Constants {
       public static double floorLevel = 0;
       public static double net = 0;
       public static double carry = 0;
+      public static double top = 0;
+      public static double safeZone = 50;
     }
   }
 
@@ -149,7 +152,7 @@ public final class Constants {
 
     public final class ButtonBox {
       // assuming port count starts at zero, increase all ints by 1 if starts by 1
-      public static final int port = 11111; // unkown referance
+      public static final int port = 1; // unkown referance
       public static final int elevatorManualLift = 10;
       public static final int elevatorManualFall = 9;
       public static final int coralManualRotateLeft = 8;
@@ -171,12 +174,12 @@ public final class Constants {
   }
 
   public final class deviceIDs {
-    public static final int elevatorID = 0;
-    public static final int coralPivotID = 0;
-    public static final int coralIntakeID = 0;
-    public static final int algaePivotID = 0;
-    public static final int algaeIntakeID = 0;
-    public static final int climberID = 0;
+    public static final int elevatorID = 8;
+    public static final int coralPivotID = 5;
+    public static final int coralIntakeID = 6;
+    public static final int algaePivotID = 3;
+    public static final int algaeIntakeID = 4;
+    public static final int climberID = 7;
   }
 
   public final class CommandTimes {

@@ -98,4 +98,16 @@ public class Limelight extends SubsystemBase {
     }
     return ty;
   }
+
+  public double getHorizontalMetres() {
+    return LimelightHelpers.getTargetPose_RobotSpace(name)[0];
+  }
+
+  public double getDistanceMetres() {
+    return LimelightHelpers.getTargetPose_RobotSpace(name)[2];
+  }
+
+  public double getRotationDegrees() {
+    return LimelightHelpers.getTargetPose_RobotSpace(name)[4] - 180;
+  }
 }
