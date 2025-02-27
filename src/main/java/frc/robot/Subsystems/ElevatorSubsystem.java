@@ -33,6 +33,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     config = new SparkMaxConfig();
     config.inverted(Elevator.MotorConfig.inverted).idleMode(IdleMode.kBrake);
     liftMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    encoder = new Encoder(0, 1);
     encoder.setDistancePerPulse(1);
     pidController = new PIDController(Elevator.PID.P, Elevator.PID.I, Elevator.PID.D);
     pidController.setTolerance(5, 10);
@@ -44,7 +45,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     if (bottomLimitSwitchPressed()) {
       encoder.reset();
     }
-    liftMotor.set(pidController.calculate(encoder.getDistance(), setPoint));
+   // liftMotor.set(pidController.calculate(encoder.getDistance(), setPoint));
   }
 
   public void withinLimits() {}
@@ -66,7 +67,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean hasReachedSetpoint() {
-    return pidController.atSetpoint();
+   // return pidController.atSetpoint();
+   return true;
   }
 
   public double getPosition() {
