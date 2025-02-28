@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AlgaeCommands.IntakeAlgaeCommand;
 import frc.robot.Commands.AlgaeCommands.MoveAlgaeArm;
 import frc.robot.Commands.AlgaeCommands.OutputAlgaeCommand;
@@ -15,6 +16,7 @@ import frc.robot.Commands.CoralCommands.IntakeCoralCommand;
 import frc.robot.Commands.CoralCommands.MoveCoralArm;
 import frc.robot.Commands.CoralCommands.OutputCoralCommand;
 import frc.robot.Commands.ElevatorCommands.MoveElevator;
+import frc.robot.Commands.RumbleCommand;
 import frc.robot.Constants.*;
 import frc.robot.Subsystems.*;
 import frc.robot.Vision.Limelight;
@@ -146,6 +148,9 @@ public class RobotContainer {
 
     // #endregion //
     // #region Algae //
+    Trigger rumbleTrigger = new Trigger(() -> algaeController.hasAlgae());
+    rumbleTrigger.onTrue(new RumbleCommand(1, 1253, mainController));
+
     BooleanEvent intakeAlgae =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.intake));
     intakeAlgae
@@ -219,15 +224,12 @@ public class RobotContainer {
             testLoop, () -> mainController.getRawButton(Constants.Control.Main.switchTestMode));
 
     switchTestMode.rising().ifHigh(() -> testMode++);
-
-    
   }
 
   public void teleopPeriodic() {
     swerveLoop.poll();
     loop.poll();
     elevator.run();
-
   }
 
   public void turnOffLimelight() {
