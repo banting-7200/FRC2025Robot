@@ -26,39 +26,40 @@ public class ElevatorSubsystem extends SubsystemBase {
   Encoder encoder;
   PIDController pidController;
   DigitalInput bottomLimitSwitch;
-  DigitalInput topLimitSwitch;
+  // DigitalInput topLimitSwitch;
 
   boolean zeroing = true;
 
   public ElevatorSubsystem() {
     liftMotor = new SparkMax(deviceIDs.elevatorID, MotorType.kBrushless);
     config = new SparkMaxConfig();
-    config.inverted(Elevator.MotorConfig.inverted).idleMode(IdleMode.kBrake);
+    config.inverted(Elevator.MotorConfig.inverted).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
     liftMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     encoder = new Encoder(0, 1);
     encoder.setDistancePerPulse(1);
     pidController = new PIDController(Elevator.PID.P, Elevator.PID.I, Elevator.PID.D);
-    pidController.setTolerance(5);
+    pidController.setTolerance(200);
     bottomLimitSwitch = new DigitalInput(Elevator.IDs.bottomLimitSwitchID);
-    topLimitSwitch = new DigitalInput(Elevator.IDs.topLimitSwitchID);
+    // topLimitSwitch = new DigitalInput(Elevator.IDs.topLimitSwitchID);
   }
 
   public void run() {
+    System.out.println("Current Position: " + getPosition());
     if (bottomLimitSwitchPressed()) {
       zeroing = false;
       encoder.reset();
-      // updateCreepDrive();
+      setMotorSpeed(0);
     }
     if (zeroing) {
       System.out.println("zeroing");
       setMotorSpeed(Elevator.reZeroSpeed);
     } else {
-      if (setPoint > getPosition() && (!belowUpperSoftLimits() || topLimitSwitchPressed())) {
+      if (setPoint < getPosition() && (!belowUpperSoftLimits())) {
         setMotorSpeed(0);
         System.out.println("Above Upper Limits");
         return;
       }
-      if (setPoint < getPosition() && (!aboveLowerSoftLimits() || bottomLimitSwitchPressed())) {
+      if (setPoint > getPosition() && (!aboveLowerSoftLimits() || bottomLimitSwitchPressed())) {
         setMotorSpeed(0);
         System.out.println("Below Lower Limits");
         return;
@@ -73,11 +74,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean belowUpperSoftLimits() {
-    return getPosition() < Elevator.Positions.top - Elevator.Positions.safeZone;
+    return getPosition() > Elevator.Positions.top + Elevator.Positions.safeZone;
   }
 
   public boolean aboveLowerSoftLimits() {
-    return getPosition() > -Elevator.Positions.safeZone;
+    return getPosition() < -Elevator.Positions.safeZone;
   }
 
   public void stopMotor() {
@@ -92,9 +93,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     return !bottomLimitSwitch.get();
   }
 
-  public boolean topLimitSwitchPressed() {
-    return !topLimitSwitch.get();
-  }
+  //   public boolean topLimitSwitchPressed() {
+  //     return !topLimitSwitch.get();
+  //   }
 
   public void moveToPosition(double setPoint) {
     zeroing = false;
@@ -109,6 +110,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     return encoder.getDistance();
   }
 
+  public double getCurrent() {
+    return liftMotor.getOutputCurrent();
+  }
+
   // Test //
 
   /**
@@ -117,13 +122,14 @@ public class ElevatorSubsystem extends SubsystemBase {
    *
    * @return Returns whether creep drive was turned on or off
    */
-  public boolean updateCreepDrive() {
-    boolean isOn = getPosition() > Elevator.Positions.algaeTwo;
-    // Settings //
-    DriveBase.TranslationPID.p =
-        isOn ? DriveBase.TranslationPID.slowP : DriveBase.TranslationPID.normalP;
-    DriveBase.RotationPID.p = isOn ? DriveBase.RotationPID.slowP : DriveBase.RotationPID.normalP;
-    // Return //
-    return isOn;
-  }
+  //   public boolean updateCreepDrive() {
+  //     boolean isOn = getPosition() > Elevator.Positions.algaeTwo;
+  //     // Settings //
+  //     DriveBase.TranslationPID.p =
+  //         isOn ? DriveBase.TranslationPID.slowP : DriveBase.TranslationPID.normalP;
+  //     DriveBase.RotationPID.p = isOn ? DriveBase.RotationPID.slowP :
+  // DriveBase.RotationPID.normalP;
+  //     // Return //
+  //     return isOn;
+  //   }
 }

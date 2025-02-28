@@ -23,7 +23,7 @@ public final class Constants {
   }
 
   public final class Elevator {
-    public static final double reZeroSpeed = -0.4;
+    public static final double reZeroSpeed = 0.4;
 
     // public static final double elevatorSpeed = 0.4;
 
@@ -33,16 +33,16 @@ public final class Constants {
     }
 
     public final class MotorConfig {
-      public static final boolean inverted = false;
+      public static final boolean inverted = true;
       public static final int canID = 1;
       public static final double positionConversionFactor = 360;
       public static final double velocityConversionFactor = 1;
     }
 
     public final class PID {
-      public static double P = 1.3;
+      public static double P = 0.001; // 0.001
       public static final double I = 0.0;
-      public static final double D = 0.7;
+      public static final double D = 0.0;
     }
 
     public final class Positions {
@@ -50,12 +50,11 @@ public final class Constants {
       public static double coralTwo = 0;
       public static double coralThree = 0;
       public static double coralFour = 0;
-      public static double algaeOne = 10000; // 24700
-      public static double algaeTwo = 37200;
+      public static double algaeOne = -19000;
+      public static double algaeTwo = -31000;
       public static double floorLevel = 0;
-      public static double net = 0;
       public static double carry = 0;
-      public static double top = 50000;
+      public static double top = -49000;
       public static double safeZone = 50;
     }
   }
