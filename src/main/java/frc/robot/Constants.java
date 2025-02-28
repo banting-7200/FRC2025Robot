@@ -54,7 +54,7 @@ public final class Constants {
       public static double algaeTwo = -31000;
       public static double floorLevel = 0;
       public static double carry = 0;
-      public static double top = -31000;
+      public static double top = -49000;
       public static double safeZone = 50;
     }
   }

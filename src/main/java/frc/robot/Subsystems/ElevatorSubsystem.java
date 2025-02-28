@@ -132,14 +132,13 @@ public class ElevatorSubsystem extends SubsystemBase {
    *
    * @return Returns whether creep drive was turned on or off
    */
-  //   public boolean updateCreepDrive() {
-  //     boolean isOn = getPosition() > Elevator.Positions.algaeTwo;
-  //     // Settings //
-  //     DriveBase.TranslationPID.p =
-  //         isOn ? DriveBase.TranslationPID.slowP : DriveBase.TranslationPID.normalP;
-  //     DriveBase.RotationPID.p = isOn ? DriveBase.RotationPID.slowP :
-  // DriveBase.RotationPID.normalP;
-  //     // Return //
-  //     return isOn;
-  //   }
+  public boolean updateCreepDrive() {
+    boolean isOn = getPosition() > Elevator.Positions.algaeOne;
+    // Settings //
+    DriveBase.TranslationPID.p =
+        isOn ? DriveBase.TranslationPID.slowP : DriveBase.TranslationPID.normalP;
+    DriveBase.RotationPID.p = isOn ? DriveBase.RotationPID.slowP : DriveBase.RotationPID.normalP;
+    // Return //
+    return isOn;
+  }
 }
