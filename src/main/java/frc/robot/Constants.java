@@ -7,7 +7,8 @@ import edu.wpi.first.wpilibj.XboxController;
 
 public final class Constants {
   public final class Climber {
-    public static final double speed = 0.1;
+    public static final double Upspeed = 0.1;
+    public static final double downSpeed = -0.1;
 
     public final class PID {
       public static final double P = 0;

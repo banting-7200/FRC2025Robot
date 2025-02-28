@@ -22,34 +22,21 @@ public class CageClimbSubsystem {
   // Data //
   double setPoint;
   boolean isCageArmUp = false;
+  double POVtest;
 
   // Constructor //
-  private CageClimbSubsystem() {
-
+  public CageClimbSubsystem() {
     climbMotor = new TalonSRX(deviceIDs.climberID);
-
-    // climbMotor = new SparkMax(deviceIDs.climberID, MotorType.kBrushless);
-
-    // Config = new SparkMaxConfig();
-    // Encoder = climbMotor.getAbsoluteEncoder();
-    // PidController = climbMotor.getClosedLoopController();
-
-    // Config.inverted(true).idleMode(IdleMode.kBrake);
-    // Config.encoder.positionConversionFactor(360).velocityConversionFactor(1);
-    // Config.closedLoop
-    //     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-    //     .pid(climber.PID.P, climber.PID.I, climber.PID.D);
-    // climbMotor.configure(Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    // climbRLimitSwitch = climbMotor.getReverseLimitSwitch();
   }
 
-  public static synchronized CageClimbSubsystem getInstance() {
-    if (instance == null) instance = new CageClimbSubsystem();
-    return instance;
-  }
-
-  public void setPercent(double percent) {
-    climbMotor.set(TalonSRXControlMode.PercentOutput, percent);
+  public void checkPOVAndMove(double POVtest) {
+    if (POVtest == 0) {
+      climbMotor.set(TalonSRXControlMode.PercentOutput, Climber.Upspeed);
+    } else if (POVtest == 180) {
+      climbMotor.set(TalonSRXControlMode.PercentOutput, Climber.downSpeed);
+    } else {
+      climbMotor.set(TalonSRXControlMode.PercentOutput, 0);
+    }
   }
 }
 
