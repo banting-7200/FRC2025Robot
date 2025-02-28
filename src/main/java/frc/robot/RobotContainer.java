@@ -102,10 +102,10 @@ public class RobotContainer {
         drivebase.driveCommand(
             () ->
                 MathUtil.applyDeadband(
-                    -mainController.getLeftY(), Constants.Control.Main.leftYDeadband),
+                    -mainController.getLeftX(), Constants.Control.Main.leftYDeadband),
             () ->
                 MathUtil.applyDeadband(
-                    -mainController.getLeftX(), Constants.Control.Main.leftXDeadband),
+                    mainController.getLeftY(), Constants.Control.Main.leftXDeadband),
             () -> -mainController.getRightX(),
             () -> -mainController.getRightY());
 
@@ -201,7 +201,7 @@ public class RobotContainer {
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeNet));
     elevatorAlgaeNet
         .rising()
-        .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.net).schedule());
+        .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.top).schedule());
     // #endregion //
     // #region Cage //
     BooleanEvent climbUp = new BooleanEvent(loop, () -> mainController.getPOV() == 0);
@@ -361,7 +361,8 @@ public class RobotContainer {
     shuffle.setLayout("Elevator", 1, 3);
     shuffle.setNumber("Height", elevator.getPosition());
     shuffle.setBoolean("Lower Limit", elevator.bottomLimitSwitchPressed());
-    shuffle.setBoolean("Upper Limit", elevator.topLimitSwitchPressed());
+    shuffle.setNumber("Current", elevator.getCurrent());
+    // shuffle.setBoolean("Upper Limit", elevator.topLimitSwitchPressed());
     // shuffle.setLayout("Limelight", 1, 3);
     // shuffle.setNumber("Tag Horizontal", limelight.getHorizontalMetres());
     // shuffle.setNumber("Tag Distance", limelight.getDistanceMetres());

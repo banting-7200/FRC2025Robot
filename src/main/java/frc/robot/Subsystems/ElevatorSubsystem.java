@@ -26,21 +26,21 @@ public class ElevatorSubsystem extends SubsystemBase {
   Encoder encoder;
   PIDController pidController;
   DigitalInput bottomLimitSwitch;
-  DigitalInput topLimitSwitch;
+  // DigitalInput topLimitSwitch;
 
   boolean zeroing = true;
 
   public ElevatorSubsystem() {
     liftMotor = new SparkMax(deviceIDs.elevatorID, MotorType.kBrushless);
     config = new SparkMaxConfig();
-    config.inverted(Elevator.MotorConfig.inverted).idleMode(IdleMode.kBrake);
+    config.inverted(Elevator.MotorConfig.inverted).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
     liftMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     encoder = new Encoder(0, 1);
     encoder.setDistancePerPulse(1);
     pidController = new PIDController(Elevator.PID.P, Elevator.PID.I, Elevator.PID.D);
     pidController.setTolerance(200);
     bottomLimitSwitch = new DigitalInput(Elevator.IDs.bottomLimitSwitchID);
-    topLimitSwitch = new DigitalInput(Elevator.IDs.topLimitSwitchID);
+    // topLimitSwitch = new DigitalInput(Elevator.IDs.topLimitSwitchID);
   }
 
   public void run() {
@@ -54,7 +54,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       System.out.println("zeroing");
       setMotorSpeed(Elevator.reZeroSpeed);
     } else {
-      if (setPoint < getPosition() && (!belowUpperSoftLimits() || topLimitSwitchPressed())) {
+      if (setPoint < getPosition() && (!belowUpperSoftLimits())) {
         setMotorSpeed(0);
         System.out.println("Above Upper Limits");
         return;
@@ -93,9 +93,9 @@ public class ElevatorSubsystem extends SubsystemBase {
     return !bottomLimitSwitch.get();
   }
 
-  public boolean topLimitSwitchPressed() {
-    return !topLimitSwitch.get();
-  }
+  //   public boolean topLimitSwitchPressed() {
+  //     return !topLimitSwitch.get();
+  //   }
 
   public void moveToPosition(double setPoint) {
     zeroing = false;
@@ -108,6 +108,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public double getPosition() {
     return encoder.getDistance();
+  }
+
+  public double getCurrent() {
+    return liftMotor.getOutputCurrent();
   }
 
   // Test //
