@@ -49,7 +49,7 @@ public final class Constants {
       public static double coralTwo = 0;
       public static double coralThree = 0;
       public static double coralFour = 0;
-      public static double algaeOne = -21000;
+      public static double algaeOne = -19000;
       public static double algaeTwo = -31000;
       public static double floorLevel = 0;
       public static double carry = 0;
