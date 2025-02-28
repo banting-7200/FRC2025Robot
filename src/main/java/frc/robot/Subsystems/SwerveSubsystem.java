@@ -57,6 +57,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private final double maxAngularVelocity = Constants.DriveBase.maxAngularVelocity;
   private final double maxCreepSpeed = Constants.DriveBase.maxCreepSpeed;
   private final double maxCreepAngularVelocity = Constants.DriveBase.maxCreepAngularVelocity;
+  private final double maxMediumSpeed = Constants.DriveBase.maxMediumSpeed;
 
   /**
    * Initialize {@link SwerveDrive} with the directory provided.
@@ -675,6 +676,11 @@ public class SwerveSubsystem extends SubsystemBase {
   public void setCreepDrive(boolean enableCreepDrive) {
     if (enableCreepDrive)
       swerveDrive.setMaximumAllowableSpeeds(maxCreepSpeed, maxCreepAngularVelocity);
+  }
+
+  public void setMediumDrive(boolean enableMediumDrive) { // check before creep
+    if (enableMediumDrive)
+      swerveDrive.setMaximumAllowableSpeeds(maxMediumSpeed, maxCreepAngularVelocity);
     else swerveDrive.setMaximumAllowableSpeeds(maxSpeed, maxAngularVelocity);
   }
 

@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj.XboxController;
 
 public final class Constants {
   public final class Climber {
-    public static final double Upspeed = 0.1;
-    public static final double downSpeed = -0.1;
+    public static final double Upspeed = 1;
+    public static final double downSpeed = -1;
 
     public final class PID {
       public static final double P = 0;
@@ -54,7 +54,7 @@ public final class Constants {
       public static double algaeTwo = -31000;
       public static double floorLevel = 0;
       public static double carry = 0;
-      public static double top = -49000;
+      public static double top = -31000;
       public static double safeZone = 50;
     }
   }
@@ -67,7 +67,7 @@ public final class Constants {
     }
 
     public final class PID {
-      public static final double P = 0.009;
+      public static final double P = 0.01;
       public static final double I = 0;
       public static final double D = 0.002;
     }
@@ -109,6 +109,7 @@ public final class Constants {
     // TODO: why this number?
     public static final double maxAngularVelocity = 5.627209491911525; // radians per second
     public static final double maxCreepSpeed = Units.feetToMeters(2); // metres per second
+    public static final double maxMediumSpeed = Units.feetToMeters(4);
     public static final double maxCreepAngularVelocity = 2; // radians per second
     public static final double wheelDiameter = 4; // inches
     public static final double driveGearRatio = 6.75; // revolutions per wheel rotation
@@ -194,7 +195,7 @@ public final class Constants {
   }
 
   public final class CommandTimes {
-    public static final int algaeIntakeTime = 2000;
+    public static final int algaeIntakeTime = 7000;
     public static final int algaeShootTime = 2000;
     public static final int coralIntakeTime = 2000;
     public static final int coralShootTime = 2000;

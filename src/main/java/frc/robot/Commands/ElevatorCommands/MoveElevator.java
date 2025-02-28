@@ -27,7 +27,10 @@ public class MoveElevator extends Command {
 
   @Override
   public boolean isFinished() {
-    System.out.println("Done Elevator");
-    return elevator.hasReachedSetpoint();
+    if (elevator.hasReachedSetpoint()) {
+      System.out.println("Done Elevator");
+      return true;
+    }
+    return false;
   }
 }
