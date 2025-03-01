@@ -176,7 +176,11 @@ public class RobotContainer {
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeNet));
     elevatorAlgaeNet
         .rising()
-        .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.top).schedule());
+        .ifHigh(
+            () ->
+                new MoveElevator(elevator, Elevator.Positions.top)
+                    .alongWith(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.shoot))
+                    .schedule());
     // #endregion //
     // #region Cage //
     BooleanEvent climbUp = new BooleanEvent(loop, () -> mainController.getPOV() == 0);
