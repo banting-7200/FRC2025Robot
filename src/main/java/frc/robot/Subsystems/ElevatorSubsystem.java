@@ -33,6 +33,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   boolean zeroing = true;
 
+  double invertedCoefficient = 1;
+
   public ElevatorSubsystem() {
     liftMotor = new SparkMax(deviceIDs.elevatorID, MotorType.kBrushless);
     config = new SparkMaxConfig();
@@ -57,7 +59,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
     if (zeroing) {
       System.out.println("zeroing");
-      setMotorSpeed(Elevator.reZeroSpeed);
+      setMotorSpeed(Elevator.reZeroSpeed * invertedCoefficient);
     } else {
       if (setPoint < getPosition() && (!belowUpperSoftLimits())) {
         setMotorSpeed(0);
@@ -74,6 +76,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       if (getPosition() > Elevator.Positions.algaeOne) {
         output = MathUtil.clamp(output, -1, 0.5);
       }
+      output *= (invertedCoefficient);
       liftMotor.set(output);
       System.out.println("Moving");
     }
@@ -124,21 +127,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     return liftMotor.getOutputCurrent();
   }
 
-  // Test //
-
-  /**
-   * Periodically run method which sets whether creep drive should be on or off for the swerve
-   * subsystem based on the elevator height.
-   *
-   * @return Returns whether creep drive was turned on or off
-   */
-  public boolean updateCreepDrive() {
-    boolean isOn = getPosition() > Elevator.Positions.algaeOne;
-    // Settings //
-    DriveBase.TranslationPID.p =
-        isOn ? DriveBase.TranslationPID.slowP : DriveBase.TranslationPID.normalP;
-    DriveBase.RotationPID.p = isOn ? DriveBase.RotationPID.slowP : DriveBase.RotationPID.normalP;
-    // Return //
-    return isOn;
+  public void flipMotor() {
+    invertedCoefficient *= -1;
   }
 }

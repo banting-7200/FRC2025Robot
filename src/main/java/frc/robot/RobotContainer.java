@@ -187,6 +187,11 @@ public class RobotContainer {
 
     BooleanEvent climbDisable = new BooleanEvent(loop, () -> mainController.getPOV() == 90);
     climbDisable.ifHigh(() -> cageArm.checkPOVAndMove(mainController.getPOV()));
+
+    BooleanEvent flipMotor =
+        new BooleanEvent(
+            loop, () -> buttonBox.getRawButton(Control.ButtonBox.coralManualRotateLeft));
+    flipMotor.rising().ifHigh(() -> elevator.flipMotor());
     // #endregion //
   }
 
