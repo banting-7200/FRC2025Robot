@@ -1,7 +1,6 @@
 package frc.robot.Commands.AlgaeCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants.*;
 import frc.robot.Subsystems.AlgaeIntakeSubsystem;
 import java.time.Clock;
 
@@ -22,15 +21,14 @@ public class IntakeAlgaeCommand extends Command {
 
   @Override
   public void execute() {
-    System.out.println("intaking algae");
+    System.out.println("intaking algae" + algaeController.intakeMotor.getEncoder().getVelocity());
     algaeController.moveToDownPosition();
     algaeController.intake();
   }
 
   @Override
   public boolean isFinished() {
-    return algaeController.hasAlgae()
-        || (timer.millis() - timeoutTime) >= CommandTimes.algaeIntakeTime;
+    return algaeController.hasAlgae();
   }
 
   @Override
