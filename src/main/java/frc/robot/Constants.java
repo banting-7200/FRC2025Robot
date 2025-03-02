@@ -24,6 +24,7 @@ public final class Constants {
 
   public final class Elevator {
     public static final double reZeroSpeed = 0.4;
+    public static final double manualSpeed = 50;
 
     // public static final double elevatorSpeed = 0.4;
 
@@ -51,10 +52,11 @@ public final class Constants {
       public static double coralThree = 0;
       public static double coralFour = 0;
       public static double algaeOne = -19000;
+      public static double mediumDriveZone = -22000;
       public static double algaeTwo = -31000;
       public static double floorLevel = 0;
       public static double carry = 0;
-      public static double top = -49000;
+      public static double top = -51000;
       public static double safeZone = 50;
     }
   }
@@ -75,7 +77,7 @@ public final class Constants {
     public final class Positions {
       public static final double up = 31.9;
       public static final double down = 99.3;
-      public static final double shoot = 50;
+      public static final double shoot = 45;
       public static final double safetyRange =
           5; // safteyRange is the range that the algae motor has to be within for the other arm to
       // be able to move up
@@ -105,12 +107,13 @@ public final class Constants {
   }
 
   public final class DriveBase {
-    public static final double maxSpeed = Units.feetToMeters(14.5); // metres per second
+    public static final double maxSpeed = Units.feetToMeters(15); // metres per second
     // TODO: why this number?
     public static final double maxAngularVelocity = 5.627209491911525; // radians per second
-    public static final double maxCreepSpeed = Units.feetToMeters(2); // metres per second
-    public static final double maxMediumSpeed = Units.feetToMeters(4);
+    public static final double maxCreepSpeed = Units.feetToMeters(3); // metres per second
+    public static final double maxMediumSpeed = Units.feetToMeters(8);
     public static final double maxCreepAngularVelocity = 2; // radians per second
+    public static final double maxMediumAngularVelocity = 4;
     public static final double wheelDiameter = 4; // inches
     public static final double driveGearRatio = 6.75; // revolutions per wheel rotation
     // TODO: how to get is this number?
@@ -154,6 +157,8 @@ public final class Constants {
       public static final int zeroSwerveDriveButton = XboxController.Button.kA.value;
       public static final int enableCreepDrive = XboxController.Axis.kLeftTrigger.value;
       public static final int switchTestMode = XboxController.Button.kY.value;
+      public static final int intake = XboxController.Button.kLeftBumper.value;
+      public static final int output = XboxController.Button.kRightBumper.value;
     }
 
     public final class ButtonBox {

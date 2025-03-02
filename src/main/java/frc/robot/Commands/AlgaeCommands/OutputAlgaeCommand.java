@@ -21,6 +21,8 @@ public class OutputAlgaeCommand extends Command {
 
   @Override
   public void execute() {
+    System.out.println(
+        "Outputting Algae " + algaeController.intakeMotor.getEncoder().getVelocity());
     algaeController.output();
   }
 

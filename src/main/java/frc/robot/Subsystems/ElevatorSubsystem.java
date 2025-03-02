@@ -35,6 +35,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   double invertedCoefficient = 1;
 
+  double manualDifference = Elevator.manualSpeed;
+
   public ElevatorSubsystem() {
     liftMotor = new SparkMax(deviceIDs.elevatorID, MotorType.kBrushless);
     config = new SparkMaxConfig();
@@ -72,11 +74,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         return;
       }
       double output = pidController.calculate(encoder.getDistance(), setPoint);
-
+      output *= (invertedCoefficient);
       if (getPosition() > Elevator.Positions.algaeOne) {
         output = MathUtil.clamp(output, -1, 0.5);
       }
-      output *= (invertedCoefficient);
       liftMotor.set(output);
       System.out.println("Moving");
     }
@@ -123,11 +124,23 @@ public class ElevatorSubsystem extends SubsystemBase {
     return encoder.getDistance();
   }
 
+  public double getSetpoint() {
+    return setPoint;
+  }
+
   public double getCurrent() {
     return liftMotor.getOutputCurrent();
   }
 
   public void flipMotor() {
     invertedCoefficient *= -1;
+  }
+
+  public void moveUp() {
+    setPoint -= manualDifference;
+  }
+
+  public void moveDown() {
+    setPoint += manualDifference;
   }
 }

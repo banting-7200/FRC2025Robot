@@ -39,6 +39,7 @@ public class RobotContainer {
   SendableChooser<String> autos;
 
   public boolean isRobotInCoralMode;
+  public boolean teleOpMode = false;
 
   private int testMode = 0;
 
@@ -92,7 +93,7 @@ public class RobotContainer {
         new BooleanEvent(
             swerveLoop,
             () -> mainController.getRawButton(Constants.Control.Main.zeroSwerveDriveButton));
-    zeroDriveBase.rising().ifHigh(() -> drivebase.zeroGyroWithAlliance());
+    zeroDriveBase.rising().ifHigh(() -> drivebase.zeroGyro());
 
     BooleanEvent enableCreepDrive =
         new BooleanEvent(
@@ -119,10 +120,10 @@ public class RobotContainer {
     // #endregion //
     // #region Algae //
     Trigger rumbleTrigger = new Trigger(() -> algaeController.hasAlgae());
-    rumbleTrigger.onTrue(new RumbleCommand(1, 1253, mainController));
+    rumbleTrigger.and(() -> teleOpMode == true).onTrue(new RumbleCommand(5, 1253, mainController));
 
     BooleanEvent intakeAlgae =
-        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.intake));
+        new BooleanEvent(loop, () -> mainController.getRawButton(Control.Main.intake));
     intakeAlgae
         .rising()
         .ifHigh(
@@ -140,7 +141,7 @@ public class RobotContainer {
 
     // Output/Shoot Algae
     BooleanEvent outputAlgae =
-        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.output));
+        new BooleanEvent(loop, () -> mainController.getRawButton(Control.Main.output));
     outputAlgae
         .rising()
         .ifHigh(
@@ -196,6 +197,15 @@ public class RobotContainer {
         new BooleanEvent(
             loop, () -> buttonBox.getRawButton(Control.ButtonBox.coralManualRotateLeft));
     flipMotor.rising().ifHigh(() -> elevator.flipMotor());
+
+    BooleanEvent moveUp =
+        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.elevatorManualLift));
+    moveUp.ifHigh(() -> elevator.moveUp());
+
+    BooleanEvent moveDown =
+        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.elevatorManualFall));
+    moveDown.ifHigh(() -> elevator.moveDown());
+
     // #endregion //
   }
 
@@ -209,7 +219,7 @@ public class RobotContainer {
   }
 
   public void teleopPeriodic() {
-    drivebase.setMediumDrive(elevator.getPosition() < Elevator.Positions.algaeOne);
+    drivebase.setMediumDrive(elevator.getSetpoint() <= Elevator.Positions.mediumDriveZone);
     swerveLoop.poll();
     loop.poll();
     elevator.run();
@@ -217,6 +227,10 @@ public class RobotContainer {
 
   public void turnOffLimelight() {
     limelight.setLight(false);
+  }
+
+  public void isTeleOp() {
+    teleOpMode = true;
   }
 
   public void initializeAutos() {

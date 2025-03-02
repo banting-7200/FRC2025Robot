@@ -21,9 +21,22 @@
                 }
               },
               {
-                "type": "named",
+                "type": "race",
                 "data": {
-                  "name": "Intake Algae"
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 5.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Intake Algae"
+                      }
+                    }
+                  ]
                 }
               }
             ]
@@ -105,13 +118,26 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Intake Algae"
+                  "name": "Move Elevator To Algae 2"
                 }
               },
               {
-                "type": "named",
+                "type": "race",
                 "data": {
-                  "name": "Move Elevator To Algae 2"
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Intake Algae"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 5.0
+                      }
+                    }
+                  ]
                 }
               }
             ]
