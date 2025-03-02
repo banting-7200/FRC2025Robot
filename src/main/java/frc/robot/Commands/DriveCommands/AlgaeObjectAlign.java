@@ -4,11 +4,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Vision.PhotonVisionCamera;
 import frc.robot.Subsystems.SwerveSubsystem;
-import java.util.function.BooleanSupplier;
+import frc.robot.Vision.PhotonVisionCamera;
 import java.util.function.Supplier;
 
 public class AlgaeObjectAlign extends Command {
@@ -24,19 +22,28 @@ public class AlgaeObjectAlign extends Command {
 
   private Command s_command;
 
-
   private Pose2d initialPose2d;
 
   public final Supplier<double[]> leftJoystick;
 
   public final Supplier<double[]> rightJoystick;
 
+  //   public AlgaeObjectAlign() // To stop errors...
+  //       {
+  //     swerveSubsystem = null;
+  //     leftJoystick = null;
+  //     photonCam = null;
+  //     positionController = null;
+  //     rightJoystick = null;
+  //     rotationController = null;
+  //   }
+
   public AlgaeObjectAlign(
       SwerveSubsystem swerveSubsystem,
       PhotonVisionCamera photonCam,
       Supplier<double[]> leftJoystick,
-      Supplier<double[]> rightJoystick,
-      boolean end) {
+      Supplier<double[]> rightJoystick) {
+    //
     this.swerveSubsystem = swerveSubsystem;
     this.photonCam = photonCam;
 
@@ -70,10 +77,8 @@ public class AlgaeObjectAlign extends Command {
       rotationAdjust = rotationController.calculate(photonCam.getTargetYaw(), 0);
       swerveSubsystem.drive(
           new Translation2d(
-              MathUtil.applyDeadband(-leftJoystick.get()[1], 0.1)
-                  * 1.5,
-              MathUtil.applyDeadband(-leftJoystick.get()[0], 0.1)
-                  * 1.5),
+              MathUtil.applyDeadband(-leftJoystick.get()[1], 0.1) * 1.5,
+              MathUtil.applyDeadband(-leftJoystick.get()[0], 0.1) * 1.5),
           rotationAdjust,
           false);
     } else {
