@@ -15,6 +15,7 @@ import frc.robot.Commands.AlgaeCommands.OutputAlgaeCommand;
 import frc.robot.Commands.CoralCommands.IntakeCoralCommand;
 import frc.robot.Commands.CoralCommands.MoveCoralArm;
 import frc.robot.Commands.CoralCommands.OutputCoralCommand;
+import frc.robot.Commands.DriveCommands.AlgaeObjectAlign;
 import frc.robot.Commands.ElevatorCommands.MoveElevator;
 import frc.robot.Commands.RumbleCommand;
 import frc.robot.Constants.*;
@@ -214,6 +215,11 @@ public class RobotContainer {
 
     BooleanEvent climbDown = new BooleanEvent(loop, () -> mainController.getPOV() == 180);
     climbDown.ifHigh(() -> cageArm.checkPOVAndMove(mainController.getPOV()));
+
+    BooleanEvent algaeAlign =
+        new BooleanEvent(loop, () -> mainController.getRightTriggerAxis() > 0.5);
+    algaeAlign.ifHigh(() -> new AlgaeObjectAlign());
+    algaeAlign.negate().ifHigh(() -> new AlgaeObjectAlign());
     // #endregion //
   }
 
