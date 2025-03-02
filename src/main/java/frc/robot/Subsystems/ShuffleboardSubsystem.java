@@ -297,8 +297,8 @@ public class ShuffleboardSubsystem {
     // basic function, just contains everything in the subsystem
     setTab("Pre-Match");
     autos = inAutos;
-    autos.setDefaultOption("No Auto Selected", "Centre 2 Algae");
     tab.add("Autos", autos).withSize(2, 1);
+    autos.setDefaultOption("No Auto Selected", "(MIDDLE) Basic Auto");
   }
 
   /**

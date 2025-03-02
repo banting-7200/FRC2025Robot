@@ -31,13 +31,10 @@ public class CageClimbSubsystem {
 
   public void checkPOVAndMove(double POVtest) {
     if (POVtest == 0) {
-      System.out.println("UP");
       climbMotor.set(TalonSRXControlMode.PercentOutput, Climber.Upspeed);
     } else if (POVtest == 180) {
-      System.out.println("DOWN");
       climbMotor.set(TalonSRXControlMode.PercentOutput, Climber.downSpeed);
     } else {
-      System.out.println("STOP");
       climbMotor.set(TalonSRXControlMode.PercentOutput, 0);
     }
   }

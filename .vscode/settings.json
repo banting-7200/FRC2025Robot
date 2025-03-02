@@ -1,55 +1,55 @@
 {
-    "java.configuration.updateBuildConfiguration": "automatic",
-    "java.server.launchMode": "Standard",
-    "files.exclude": {
-        "**/.git": true,
-        "**/.svn": true,
-        "**/.hg": true,
-        "**/CVS": true,
-        "**/.DS_Store": true,
-        "bin/": true,
-        "**/.classpath": true,
-        "**/.project": true,
-        "**/.settings": true,
-        "**/.factorypath": true,
-        "**/*~": true
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.server.launchMode": "Standard",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "bin/": true,
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true,
+    "**/*~": true
+  },
+  "java.test.config": [
+    {
+      "name": "WPIlibUnitTests",
+      "workingDirectory": "${workspaceFolder}/build/jni/release",
+      "vmargs": [
+        "-Djava.library.path=${workspaceFolder}/build/jni/release"
+      ],
+      "env": {
+        "LD_LIBRARY_PATH": "${workspaceFolder}/build/jni/release",
+        "DYLD_LIBRARY_PATH": "${workspaceFolder}/build/jni/release"
+      }
     },
-    "java.test.config": [
-        {
-            "name": "WPIlibUnitTests",
-            "workingDirectory": "${workspaceFolder}/build/jni/release",
-            "vmargs": [
-                "-Djava.library.path=${workspaceFolder}/build/jni/release"
-            ],
-            "env": {
-                "LD_LIBRARY_PATH": "${workspaceFolder}/build/jni/release",
-                "DYLD_LIBRARY_PATH": "${workspaceFolder}/build/jni/release"
-            }
-        },
-        null
-    ],
-    "java.test.defaultConfig": "WPIlibUnitTests",
+    null
+  ],
+  "java.test.defaultConfig": "WPIlibUnitTests",
 
-    // Disable VSCode built-in formatting
-    "java.format.enabled": false,
+  // Disable VSCode built-in formatting
+  "java.format.enabled": false,
 
-    // Explicit formatting configuration
-    "editor.detectIndentation": false,
-    "editor.insertSpaces": true,
-    "editor.formatOnSave": true,
-    "editor.formatOnSaveMode": "file",
-    "editor.autoIndent": "full",
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "[java]": {
-        "spotlessGradle.format.enable": true,
-        "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"
-    },
-    "[gradle]": {
-        "spotlessGradle.format.enable": true,
-        "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"
-    },
-    "editor.tokenColorCustomizations": {
-        "comments": "",
-        "textMateRules": []
-    }
+  // Explicit formatting configuration
+  "editor.detectIndentation": false,
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "editor.autoIndent": "full",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[java]": {
+    "spotlessGradle.format.enable": true,
+    "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"
+  },
+  "[gradle]": {
+    "spotlessGradle.format.enable": true,
+    "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"
+  },
+  "editor.tokenColorCustomizations": {
+    "comments": "",
+    "textMateRules": []
+  }
 }

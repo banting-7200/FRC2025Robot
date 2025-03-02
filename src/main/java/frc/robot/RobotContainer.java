@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AlgaeCommands.IntakeAlgaeCommand;
@@ -33,17 +32,15 @@ public class RobotContainer {
   private Command driveFieldOrientedDirectAngle;
   private static RobotContainer instance;
 
-  // public CoralIntakeSubsystem coralController;
+  public CoralIntakeSubsystem coralController;
   public AlgaeIntakeSubsystem algaeController;
   public CageClimbSubsystem cageArm;
   public ElevatorSubsystem elevator;
   public Limelight limelight;
 
   public ShuffleboardSubsystem shuffle;
-  SendableChooser<String> autos;
 
   public boolean isRobotInCoralMode;
-  public boolean teleOpMode = false;
 
   private int testMode = 0;
 
@@ -64,7 +61,7 @@ public class RobotContainer {
 
   private RobotContainer() {
     limelight = new Limelight("Limelight");
-    // coralController = new CoralIntakeSubsystem();
+    coralController = new CoralIntakeSubsystem();
     algaeController = new AlgaeIntakeSubsystem();
     cageArm = new CageClimbSubsystem();
     elevator = new ElevatorSubsystem();
@@ -72,6 +69,37 @@ public class RobotContainer {
     drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
 
     // coralArm = new CoralIntakeSubsystem();
+
+    NamedCommands.registerCommand("Intake Coral", new IntakeCoralCommand(coralController));
+    NamedCommands.registerCommand("Intake Algae", new IntakeAlgaeCommand(algaeController));
+    NamedCommands.registerCommand("Output Coral", new OutputCoralCommand(coralController));
+    NamedCommands.registerCommand("Output Algae", new OutputAlgaeCommand(algaeController));
+    NamedCommands.registerCommand(
+        "Move Coral Arm To Output",
+        new MoveCoralArm(coralController, CoralSystem.Positions.dropOff));
+    NamedCommands.registerCommand(
+        "Move Coral Arm To Intake",
+        new MoveCoralArm(coralController, CoralSystem.Positions.intake));
+    NamedCommands.registerCommand(
+        "Move Coral Arm To Carry", new MoveCoralArm(coralController, CoralSystem.Positions.carry));
+    NamedCommands.registerCommand(
+        "Move Algae Arm Down", new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down));
+    NamedCommands.registerCommand(
+        "Move Algae Arm Up", new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.up));
+    NamedCommands.registerCommand(
+        "Move Elevator To Coral 1", new MoveElevator(elevator, Elevator.Positions.coralOne));
+    NamedCommands.registerCommand(
+        "Move Elevator To Coral 2", new MoveElevator(elevator, Elevator.Positions.coralTwo));
+    NamedCommands.registerCommand(
+        "Move Elevator To Coral 3", new MoveElevator(elevator, Elevator.Positions.coralThree));
+    NamedCommands.registerCommand(
+        "Move Elevator To Coral 4", new MoveElevator(elevator, Elevator.Positions.coralFour));
+    NamedCommands.registerCommand(
+        "Move Elevator To Algae 1", new MoveElevator(elevator, Elevator.Positions.algaeOne));
+    NamedCommands.registerCommand(
+        "Move Elevator To Algae 2", new MoveElevator(elevator, Elevator.Positions.algaeTwo));
+    NamedCommands.registerCommand(
+        "Move Elevator To Floor Level", new MoveElevator(elevator, Elevator.Positions.floorLevel));
 
     driveFieldOrientedDirectAngle =
         drivebase.driveCommand(
@@ -86,8 +114,6 @@ public class RobotContainer {
 
     // configureBindings();
     configureNewBindings();
-    initializeNamedCommands();
-    initializeAutos();
   }
 
   public void configureNewBindings() {
@@ -97,15 +123,15 @@ public class RobotContainer {
         new BooleanEvent(
             swerveLoop,
             () -> mainController.getRawButton(Constants.Control.Main.zeroSwerveDriveButton));
-    zeroDriveBase.rising().ifHigh(() -> drivebase.zeroGyro());
+    zeroDriveBase.rising().ifHigh(() -> drivebase.zeroGyroWithAlliance());
 
     BooleanEvent enableCreepDrive =
         new BooleanEvent(
             swerveLoop,
             () -> mainController.getRawAxis(Constants.Control.Main.enableCreepDrive) > 0.5);
 
-    enableCreepDrive.ifHigh(() -> drivebase.setCreepDrive(true));
-    // enableCreepDrive.falling().ifHigh(() -> drivebase.setCreepDrive(false));
+    enableCreepDrive.rising().ifHigh(() -> drivebase.setCreepDrive(true));
+    enableCreepDrive.falling().ifHigh(() -> drivebase.setCreepDrive(false));
     drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
     // #endregion //
 
@@ -124,10 +150,10 @@ public class RobotContainer {
     // #endregion //
     // #region Algae //
     Trigger rumbleTrigger = new Trigger(() -> algaeController.hasAlgae());
-    rumbleTrigger.and(() -> teleOpMode == true).onTrue(new RumbleCommand(5, 1253, mainController));
+    rumbleTrigger.onTrue(new RumbleCommand(1, 1253, mainController));
 
     BooleanEvent intakeAlgae =
-        new BooleanEvent(loop, () -> mainController.getRawButton(Control.Main.intake));
+        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.intake));
     intakeAlgae
         .rising()
         .ifHigh(
@@ -145,7 +171,7 @@ public class RobotContainer {
 
     // Output/Shoot Algae
     BooleanEvent outputAlgae =
-        new BooleanEvent(loop, () -> mainController.getRawButton(Control.Main.output));
+        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.output));
     outputAlgae
         .rising()
         .ifHigh(
@@ -181,11 +207,7 @@ public class RobotContainer {
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeNet));
     elevatorAlgaeNet
         .rising()
-        .ifHigh(
-            () ->
-                new MoveElevator(elevator, Elevator.Positions.top)
-                    .alongWith(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.shoot))
-                    .schedule());
+        .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.top).schedule());
     // #endregion //
     // #region Cage //
     BooleanEvent climbUp = new BooleanEvent(loop, () -> mainController.getPOV() == 0);
@@ -211,7 +233,6 @@ public class RobotContainer {
   }
 
   public void teleopPeriodic() {
-    drivebase.setMediumDrive(elevator.getSetpoint() <= Elevator.Positions.mediumDriveZone);
     swerveLoop.poll();
     loop.poll();
     elevator.run();
@@ -221,26 +242,10 @@ public class RobotContainer {
     limelight.setLight(false);
   }
 
-  public void isTeleOp() {
-    teleOpMode = true;
-  }
-
-  public void initializeAutos() {
-    autos = new SendableChooser<>();
-    autos.addOption("Centre 1 Algae", "Centre 1 Algae");
-    autos.addOption("Test Auto", "Test Auto");
-    autos.addOption("Centre 2 Algae", "Centre 2 Algae");
-    shuffle.newAutoChooser(autos);
-  }
-
-  public Command getAutoCommand() {
-    return drivebase.getAutonomousCommand(shuffle.getAuto());
-  }
-
   public void updateShuffle() {
     shuffle.setTab("Driver");
     shuffle.setBoolean("Algae", algaeController.hasAlgae());
-    // shuffle.setBoolean("Coral", coralController.hasCoral());
+    shuffle.setBoolean("Coral", coralController.hasCoral());
 
     shuffle.setTab("Status");
     shuffle.setLayout("Algae", 1, 3);
@@ -258,48 +263,5 @@ public class RobotContainer {
     // shuffle.setNumber("Tag Horizontal", limelight.getHorizontalMetres());
     // shuffle.setNumber("Tag Distance", limelight.getDistanceMetres());
     // shuffle.setNumber("Tag Rotation", limelight.getRotationDegrees());
-  }
-
-  public void initializeNamedCommands() {
-    // NamedCommands.registerCommand("Intake Coral", new IntakeCoralCommand(coralController));
-    NamedCommands.registerCommand(
-        "Intake Algae",
-        new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down)
-            .andThen(new IntakeAlgaeCommand(algaeController)));
-    // NamedCommands.registerCommand("Output Coral", new OutputCoralCommand(coralController));
-    NamedCommands.registerCommand("Output Algae", new OutputAlgaeCommand(algaeController));
-    // NamedCommands.registerCommand(
-    //     "Move Coral Arm To Output",
-    //     new MoveCoralArm(coralController, CoralSystem.Positions.dropOff));
-    // NamedCommands.registerCommand(
-    //     "Move Coral Arm To Intake",
-    //     new MoveCoralArm(coralController, CoralSystem.Positions.intake));
-    // NamedCommands.registerCommand(
-    //     "Move Coral Arm To Carry", new MoveCoralArm(coralController,
-    // CoralSystem.Positions.carry));
-    NamedCommands.registerCommand(
-        "Move Algae Arm Down", new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down));
-    NamedCommands.registerCommand(
-        "Move Algae Arm To Shoot", new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.shoot));
-    NamedCommands.registerCommand(
-        "Move Algae Arm Up", new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.up));
-    NamedCommands.registerCommand(
-        "Tilt Algae Arm", new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down - 10));
-    NamedCommands.registerCommand(
-        "Move Elevator To Coral 1", new MoveElevator(elevator, Elevator.Positions.coralOne));
-    NamedCommands.registerCommand(
-        "Move Elevator To Coral 2", new MoveElevator(elevator, Elevator.Positions.coralTwo));
-    NamedCommands.registerCommand(
-        "Move Elevator To Coral 3", new MoveElevator(elevator, Elevator.Positions.coralThree));
-    NamedCommands.registerCommand(
-        "Move Elevator To Coral 4", new MoveElevator(elevator, Elevator.Positions.coralFour));
-    NamedCommands.registerCommand(
-        "Move Elevator To Algae 1", new MoveElevator(elevator, Elevator.Positions.algaeOne));
-    NamedCommands.registerCommand(
-        "Move Elevator To Algae 2", new MoveElevator(elevator, Elevator.Positions.algaeTwo));
-    NamedCommands.registerCommand(
-        "Move Elevator To Net", new MoveElevator(elevator, Elevator.Positions.top));
-    NamedCommands.registerCommand(
-        "Move Elevator To Floor Level", new MoveElevator(elevator, Elevator.Positions.floorLevel));
   }
 }

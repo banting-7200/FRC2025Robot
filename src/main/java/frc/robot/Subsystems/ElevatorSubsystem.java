@@ -12,8 +12,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
@@ -27,15 +25,10 @@ public class ElevatorSubsystem extends SubsystemBase {
   double setPoint = Elevator.Positions.floorLevel;
   Encoder encoder;
   PIDController pidController;
-  ElevatorFeedforward feedforward;
   DigitalInput bottomLimitSwitch;
   // DigitalInput topLimitSwitch;
 
   boolean zeroing = true;
-
-  double invertedCoefficient = 1;
-
-  double manualDifference = Elevator.manualSpeed;
 
   public ElevatorSubsystem() {
     liftMotor = new SparkMax(deviceIDs.elevatorID, MotorType.kBrushless);
@@ -45,15 +38,13 @@ public class ElevatorSubsystem extends SubsystemBase {
     encoder = new Encoder(0, 1);
     encoder.setDistancePerPulse(1);
     pidController = new PIDController(Elevator.PID.P, Elevator.PID.I, Elevator.PID.D);
-    feedforward = new ElevatorFeedforward(0, 0.1, 0);
     pidController.setTolerance(200);
     bottomLimitSwitch = new DigitalInput(Elevator.IDs.bottomLimitSwitchID);
     // topLimitSwitch = new DigitalInput(Elevator.IDs.topLimitSwitchID);
   }
 
   public void run() {
-    System.out.println("Current Position: " + getPosition());
-    System.out.println("Current: " + getCurrent());
+    System.out.println("Current Position: " + getPosition() + " | Setpoint: " + setPoint);
     if (bottomLimitSwitchPressed()) {
       zeroing = false;
       encoder.reset();
@@ -61,7 +52,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
     if (zeroing) {
       System.out.println("zeroing");
-      setMotorSpeed(Elevator.reZeroSpeed * invertedCoefficient);
+      setMotorSpeed(Elevator.reZeroSpeed);
     } else {
       if (setPoint < getPosition() && (!belowUpperSoftLimits())) {
         setMotorSpeed(0);
@@ -73,12 +64,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         System.out.println("Below Lower Limits");
         return;
       }
-      double output = pidController.calculate(encoder.getDistance(), setPoint);
-      output *= (invertedCoefficient);
-      if (getPosition() > Elevator.Positions.algaeOne) {
-        output = MathUtil.clamp(output, -1, 0.5);
-      }
-      liftMotor.set(output);
+      liftMotor.set(pidController.calculate(encoder.getDistance(), setPoint));
       System.out.println("Moving");
     }
   }
@@ -124,23 +110,25 @@ public class ElevatorSubsystem extends SubsystemBase {
     return encoder.getDistance();
   }
 
-  public double getSetpoint() {
-    return setPoint;
-  }
-
   public double getCurrent() {
     return liftMotor.getOutputCurrent();
   }
 
-  public void flipMotor() {
-    invertedCoefficient *= -1;
-  }
+  // Test //
 
-  public void moveUp() {
-    setPoint -= manualDifference;
-  }
-
-  public void moveDown() {
-    setPoint += manualDifference;
+  /**
+   * Periodically run method which sets whether creep drive should be on or off for the swerve
+   * subsystem based on the elevator height.
+   *
+   * @return Returns whether creep drive was turned on or off
+   */
+  public boolean updateCreepDrive() {
+    boolean isOn = getPosition() > Elevator.Positions.algaeOne;
+    // Settings //
+    DriveBase.TranslationPID.p =
+        isOn ? DriveBase.TranslationPID.slowP : DriveBase.TranslationPID.normalP;
+    DriveBase.RotationPID.p = isOn ? DriveBase.RotationPID.slowP : DriveBase.RotationPID.normalP;
+    // Return //
+    return isOn;
   }
 }
