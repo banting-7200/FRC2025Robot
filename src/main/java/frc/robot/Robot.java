@@ -5,7 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Commands.AlgaeCommands.MoveAlgaeArm;
 
@@ -17,7 +16,6 @@ import frc.robot.Commands.AlgaeCommands.MoveAlgaeArm;
 public class Robot extends TimedRobot {
 
   RobotContainer robotContainer;
-  Command autoCommand;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -58,12 +56,7 @@ public class Robot extends TimedRobot {
    * chooser code above as well.
    */
   @Override
-  public void autonomousInit() {
-    autoCommand = robotContainer.getAutoCommand();
-    if (autoCommand != null) {
-      autoCommand.schedule();
-    }
-  }
+  public void autonomousInit() {}
 
   /** This function is called periodically during autonomous. */
   @Override
