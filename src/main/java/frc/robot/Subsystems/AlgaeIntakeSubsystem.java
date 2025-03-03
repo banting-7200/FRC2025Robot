@@ -23,8 +23,11 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
   public boolean isArmUp;
   public SparkMax pivotMotor;
   public SparkMax intakeMotor;
+  public SparkMax intakeMotor2;
   public SparkMaxConfig pivotConfig = new SparkMaxConfig();
   public SparkMaxConfig intakeConfig = new SparkMaxConfig();
+  public SparkMaxConfig intake2Config = new SparkMaxConfig();
+
   // public SparkAbsoluteEncoder pivotEncoder;
   public SparkClosedLoopController pidController;
 
@@ -36,6 +39,7 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
 
     pivotMotor = new SparkMax(deviceIDs.algaePivotID, MotorType.kBrushless);
     intakeMotor = new SparkMax(deviceIDs.algaeIntakeID, MotorType.kBrushless);
+    intakeMotor2 = new SparkMax(5, MotorType.kBrushless);
     // pivotEncoder = pivotMotor.getAbsoluteEncoder();
     pidController = pivotMotor.getClosedLoopController();
 
@@ -68,6 +72,10 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
         pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     intakeMotor.configure(
         intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    intake2Config.inverted(true).idleMode(IdleMode.kBrake).follow(intakeMotor, true);
+
+    intakeMotor2.configure(
+        intake2Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     pivotFLimitSwitch = pivotMotor.getForwardLimitSwitch();
     pivotRLimitSwitch = pivotMotor.getReverseLimitSwitch();

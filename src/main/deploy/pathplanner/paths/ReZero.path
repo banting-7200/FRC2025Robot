@@ -8,7 +8,7 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.35,
+        "x": 6.6,
         "y": 5.0
       },
       "isLocked": false,
@@ -16,24 +16,19 @@
     },
     {
       "anchor": {
-        "x": 5.25,
-        "y": 5.35
+        "x": 6.5,
+        "y": 4.0
       },
       "prevControl": {
-        "x": 6.249999999999999,
-        "y": 7.082050807568877
+        "x": 7.5,
+        "y": 4.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Algae 300 Degrees"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.95,
-      "rotationDegrees": -29.999999999999996
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -46,8 +41,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -29.999999999999996
+    "velocity": 0.0,
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": null,

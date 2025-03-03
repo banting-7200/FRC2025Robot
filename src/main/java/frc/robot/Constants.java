@@ -23,7 +23,7 @@ public final class Constants {
   }
 
   public final class Elevator {
-    public static final double reZeroSpeed = 0.4;
+    public static final double reZeroSpeed = 0.5;
     public static final double manualSpeed = 50;
 
     // public static final double elevatorSpeed = 0.4;
@@ -51,9 +51,9 @@ public final class Constants {
       public static double coralTwo = 0;
       public static double coralThree = 0;
       public static double coralFour = 0;
-      public static double algaeOne = -19000;
+      public static double algaeOne = -21100;
       public static double mediumDriveZone = -22000;
-      public static double algaeTwo = -31000;
+      public static double algaeTwo = -33000;
       public static double floorLevel = 0;
       public static double carry = 0;
       public static double top = -51000;
@@ -64,7 +64,7 @@ public final class Constants {
   public final class AlgaeSystem {
     public final class MotorSpeeds {
       public static final double intakeSpeed = -0.5;
-      public static final double outputSpeed = 1;
+      public static final double outputSpeed = 0.5;
       public static final double shootSpeed = 1;
     }
 

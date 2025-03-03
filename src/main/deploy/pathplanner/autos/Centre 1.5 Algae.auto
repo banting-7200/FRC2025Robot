@@ -134,7 +134,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 5.0
+                        "waitTime": 7.0
                       }
                     }
                   ]
@@ -144,59 +144,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "wait",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "300 Degrees to Barge Right"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Tilt Algae Arm"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Move Algae Arm To Shoot"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Move Elevator To Net"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Output Algae"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Move Elevator To Algae 1"
+            "waitTime": 15.0
           }
         }
       ]

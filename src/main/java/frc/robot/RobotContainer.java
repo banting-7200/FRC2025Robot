@@ -130,6 +130,7 @@ public class RobotContainer {
             () ->
                 new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down)
                     .andThen(new IntakeAlgaeCommand(algaeController))
+                    .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down - 10))
                     .schedule());
 
     BooleanEvent moveAlgaeToShoot =
@@ -237,7 +238,7 @@ public class RobotContainer {
     autos = new SendableChooser<>();
     autos.addOption("Centre 1 Algae", "Centre 1 Algae");
     autos.addOption("Test Auto", "Test Auto");
-    autos.addOption("Centre 2 Algae", "Centre 2 Algae");
+    autos.addOption("Centre 1.5 Algae", "Centre 1.5 Algae");
     shuffle.newAutoChooser(autos);
   }
 
