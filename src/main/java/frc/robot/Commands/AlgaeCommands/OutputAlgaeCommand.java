@@ -21,14 +21,12 @@ public class OutputAlgaeCommand extends Command {
 
   @Override
   public void execute() {
-    System.out.println(
-        "Outputting Algae " + algaeController.intakeMotor.getEncoder().getVelocity());
     algaeController.output();
   }
 
   @Override
   public boolean isFinished() {
-    return (timer.millis() - timeoutTime) >= 1200;
+    return (timer.millis() - timeoutTime) >= 2000;
   }
 
   @Override
