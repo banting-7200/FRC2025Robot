@@ -6,11 +6,10 @@ import com.revrobotics.spark.SparkAbsoluteEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.*;
 
 // Subsystem //
-public class CageClimbSubsystem extends SubsystemBase {
+public class CageClimbSubsystem {
   // Singleton //
   private static CageClimbSubsystem instance;
   // Motor Data //
@@ -32,24 +31,15 @@ public class CageClimbSubsystem extends SubsystemBase {
 
   public void checkPOVAndMove(double POVtest) {
     if (POVtest == 0) {
+      System.out.println("UP");
       climbMotor.set(TalonSRXControlMode.PercentOutput, Climber.Upspeed);
     } else if (POVtest == 180) {
+      System.out.println("DOWN");
       climbMotor.set(TalonSRXControlMode.PercentOutput, Climber.downSpeed);
     } else {
+      System.out.println("STOP");
       climbMotor.set(TalonSRXControlMode.PercentOutput, 0);
     }
-  }
-
-  public void climbUp() {
-    climbMotor.set(TalonSRXControlMode.PercentOutput, Climber.Upspeed);
-  }
-
-  public void climbDown() {
-    climbMotor.set(TalonSRXControlMode.PercentOutput, Climber.downSpeed);
-  }
-
-  public void stopClimb() {
-    climbMotor.set(TalonSRXControlMode.PercentOutput, 0);
   }
 }
 

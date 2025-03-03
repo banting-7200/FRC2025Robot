@@ -84,7 +84,8 @@ public class CoralIntakeSubsystem extends SubsystemBase {
   // Intake Motor
 
   private void spinIntake(double speed) {
-    intakeMotor.set(speed);
+
+    intakeMotor.setVoltage(speed * 13);
   }
 
   public void intake() {
