@@ -28,16 +28,6 @@ public class AlgaeObjectAlign extends Command {
 
   public final Supplier<double[]> rightJoystick;
 
-  //   public AlgaeObjectAlign() // To stop errors...
-  //       {
-  //     swerveSubsystem = null;
-  //     leftJoystick = null;
-  //     photonCam = null;
-  //     positionController = null;
-  //     rightJoystick = null;
-  //     rotationController = null;
-  //   }
-
   public AlgaeObjectAlign(
       SwerveSubsystem swerveSubsystem,
       PhotonVisionCamera photonCam,
@@ -69,24 +59,26 @@ public class AlgaeObjectAlign extends Command {
 
   @Override
   public void execute() {
-
+    // Debug //
     System.out.println("Current yaw: " + photonCam.getTargetYaw());
+    // Data //
     double rotationAdjust = 0;
-    if (photonCam.hasTarget()) {
-      c_algaeArea = photonCam.getTargetArea();
-      rotationAdjust = rotationController.calculate(photonCam.getTargetYaw(), 0);
-      swerveSubsystem.drive(
-          new Translation2d(
-              MathUtil.applyDeadband(-leftJoystick.get()[1], 0.1) * 1.5,
-              MathUtil.applyDeadband(-leftJoystick.get()[0], 0.1) * 1.5),
-          rotationAdjust,
-          false);
-    } else {
-      /*
-       * swerveSubsystem.driveFieldOriented(leftJoystick.get(), rightJoystick.get());
-       */
-      swerveSubsystem.drive(leftJoystick.get(), rightJoystick.get());
-    }
+    // Conditions //
+    if (!photonCam.hasTarget()) return;
+    // Target Data //
+    c_algaeArea = photonCam.getTargetArea();
+    // Calculations //
+    rotationAdjust = rotationController.calculate(photonCam.getTargetYaw(), 0);
+    // Drive //
+    swerveSubsystem.drive(
+        new Translation2d(
+            MathUtil.applyDeadband(-leftJoystick.get()[1], 0.1) * 1.5,
+            MathUtil.applyDeadband(-leftJoystick.get()[0], 0.1) * 1.5),
+        rotationAdjust,
+        false);
+    /*
+     * swerveSubsystem.driveFieldOriented(leftJoystick.get(), rightJoystick.get());
+     */
   }
 
   @Override

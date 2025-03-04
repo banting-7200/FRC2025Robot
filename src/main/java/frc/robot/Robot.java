@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Commands.AlgaeCommands.MoveAlgaeArm;
 
 /**
@@ -95,7 +96,18 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+    System.out.println("Simulation Has Begun!");
+    new WaitCommand(10)
+        .andThen(
+            () -> {
+              System.out.println("Raising Elevator!");
+              RobotContainer.getInstance()
+                  .elevator
+                  .moveToPosition(Constants.Elevator.Positions.algaeOne);
+            })
+        .schedule();
+  }
 
   /** This function is called periodically whilst in simulation. */
   @Override

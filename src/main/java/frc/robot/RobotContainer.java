@@ -16,7 +16,6 @@ import frc.robot.Commands.ClimbCommands.MoveClimb;
 import frc.robot.Commands.CoralCommands.IntakeCoralCommand;
 import frc.robot.Commands.CoralCommands.MoveCoralArm;
 import frc.robot.Commands.CoralCommands.OutputCoralCommand;
-import frc.robot.Commands.DriveCommands.AlgaeObjectAlign;
 import frc.robot.Commands.ElevatorCommands.MoveElevator;
 import frc.robot.Commands.RumbleCommand;
 import frc.robot.Constants.*;
@@ -30,7 +29,7 @@ import java.io.File;
 
 public class RobotContainer {
   private CommandXBox mainController = new CommandXBox(Control.Main.port);
-  private XboxController mainPhysicalController = (XboxController) mainController.getHID();
+  private XboxController mainPhysicalController = new XboxController(Control.Main.port);
   public CommandButtonBox buttonBox = new CommandButtonBox(Control.ButtonBox.port);
   private SwerveSubsystem drivebase;
   private Command driveFieldOrientedDirectAngle;
@@ -77,7 +76,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake Coral", new IntakeCoralCommand(coralController));
     NamedCommands.registerCommand("Intake Algae", new IntakeAlgaeCommand(algaeController));
     NamedCommands.registerCommand("Output Coral", new OutputCoralCommand(coralController));
-    NamedCommands.registerCommand("Output Algae", new OutputAlgaeCommand(algaeController));
+    NamedCommands.registerCommand(
+        "Output Algae", new OutputAlgaeCommand(algaeController, elevator));
     NamedCommands.registerCommand(
         "Move Coral Arm To Output",
         new MoveCoralArm(coralController, CoralSystem.Positions.dropOff));
@@ -121,7 +121,7 @@ public class RobotContainer {
   }
 
   public void configureNewBindings() {
-    // #region Swerve //
+    // #region Swerve
     mainController
         .zeroSwerveDrive()
         .onTrue(new InstantCommand(() -> drivebase.zeroGyroWithAlliance()));
@@ -132,10 +132,9 @@ public class RobotContainer {
         .onFalse(new InstantCommand(() -> drivebase.setCreepDrive(false)));
 
     drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
-    // #endregion //
 
-    // #endregion //
-    // #region Algae //
+    // #endregion
+    // #region Algae
     new Trigger(algaeController::hasAlgae)
         .onTrue(new RumbleCommand(1, 1253, mainPhysicalController));
 
@@ -154,13 +153,17 @@ public class RobotContainer {
     buttonBox
         .output()
         .onTrue(
-            new OutputAlgaeCommand(algaeController)
+            new OutputAlgaeCommand(algaeController, elevator)
                 .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.shoot)));
 
-    // #region Elevator //
+    // #region Elevator
     buttonBox.reZeroElevator().onTrue(new InstantCommand(() -> elevator.zero()));
 
     buttonBox.floorLevelButton().onTrue(new MoveElevator(elevator, Elevator.Positions.floorLevel));
+
+    buttonBox
+        .processorLevel()
+        .onTrue(new MoveElevator(elevator, Elevator.Positions.processorLevel));
 
     buttonBox.algaeLevel1().onTrue(new MoveElevator(elevator, Elevator.Positions.algaeOne));
 
@@ -168,12 +171,13 @@ public class RobotContainer {
 
     buttonBox.algaeNet().onTrue(new MoveElevator(elevator, Elevator.Positions.top));
     // #endregion //
-    // #region Cage //
+    // #region Cage
     mainController.cageClimbUp().onTrue(new MoveClimb(cageArm, true));
 
     mainController.cageClimbDown().onTrue(new MoveClimb(cageArm, false));
 
-    mainController.algaeAlign().onTrue(new AlgaeObjectAlign(mainController.algaeAlign().negate()));
+    // mainController.algaeAlign().onTrue(new
+    // AlgaeObjectAlign(mainController.algaeAlign().negate()));
 
     // BooleanEvent algaeAlign =
     //     new BooleanEvent(loop, () -> mainController.getRightTriggerAxis() > 0.5);

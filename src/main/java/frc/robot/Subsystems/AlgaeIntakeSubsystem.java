@@ -124,6 +124,10 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
     spinIntake(AlgaeSystem.MotorSpeeds.outputSpeed);
   }
 
+  public void outputProcessor() {
+    spinIntake(AlgaeSystem.MotorSpeeds.outputProcessorSpeed);
+  }
+
   public void shoot() {
     spinIntake(AlgaeSystem.MotorSpeeds.shootSpeed);
   }

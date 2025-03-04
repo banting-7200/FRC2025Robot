@@ -52,6 +52,7 @@ public final class Constants {
       public static double coralFour = 0;
       public static double algaeOne = -19000;
       public static double algaeTwo = -31000;
+      public static double processorLevel = 0; // TODO: Set correct Position!
       public static double floorLevel = 0;
       public static double carry = 0;
       public static double top = -31000; // -49000
@@ -63,6 +64,7 @@ public final class Constants {
     public final class MotorSpeeds {
       public static final double intakeSpeed = -0.5;
       public static final double outputSpeed = 1;
+      public static final double outputProcessorSpeed = .5;
       public static final double shootSpeed = 1;
     }
 

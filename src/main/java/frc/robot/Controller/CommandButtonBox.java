@@ -22,8 +22,11 @@ public class CommandButtonBox extends CommandGenericHID {
   public static final int level2Button = 2;
   public static final int level3Button = 1;
   // Algae //
+  public static final int algaeArmDown = 0; // TODO: Find Correct Button!
+
   public static final int reZeroElevator = 5;
   public static final int floorLevelButton = 4;
+  public static final int processorLevel = 6; // TODO: Replaced with the shoot button!
   public static final int algaeLevel1 = 3;
   public static final int algaeLevel2 = 2;
   public static final int algaeNet = 1;
@@ -55,6 +58,8 @@ public class CommandButtonBox extends CommandGenericHID {
     return new JoystickButton(controller, coralManualRotateRight);
   }
 
+  public Trigger algaeArmDown() {}
+
   public Trigger intake() {
     return new JoystickButton(controller, intake);
   }
@@ -81,6 +86,10 @@ public class CommandButtonBox extends CommandGenericHID {
 
   public Trigger floorLevelButton() {
     return new JoystickButton(controller, floorLevelButton);
+  }
+
+  public Trigger processorLevel() {
+    return new JoystickButton(controller, processorLevel);
   }
 
   public Trigger algaeLevel1() {
