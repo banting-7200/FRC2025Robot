@@ -474,6 +474,17 @@ public class SwerveSubsystem extends SubsystemBase {
     swerveDrive.drive(velocity);
   }
 
+  public void drive(double[] leftJoystick, double[] rightJoystick) {
+    swerveDrive.drive(
+        swerveDrive.swerveController.getTargetSpeeds(
+            -leftJoystick[1] * 1.5,
+            -leftJoystick[0] * 1.5,
+            rightJoystick[0],
+            rightJoystick[1],
+            swerveDrive.getOdometryHeading().getRadians(),
+            swerveDrive.getMaximumChassisVelocity()));
+  }
+
   /**
    * Get the swerve drive kinematics object.
    *
@@ -701,5 +712,49 @@ public class SwerveSubsystem extends SubsystemBase {
                             .getYaw()))); // Not sure if this will work, more math may be required.
           }
         });
+  }
+
+  public double[] squareifyInput(double x, double y) {
+    double PiOverFour = Math.PI / 4;
+
+    // Determine the theta angle
+    double angle = Math.atan2(y, x) + Math.PI;
+    double[] squared = {0, 0};
+
+    // Scale according to which wall we're clamping to
+    // X+ wall
+    if (angle <= PiOverFour || angle > 7 * PiOverFour) {
+      squared[0] = x * (1 / Math.cos(angle));
+      squared[1] = y * (1 / Math.cos(angle));
+    }
+    // Y+ wall
+    else if (angle > PiOverFour && angle <= 3 * PiOverFour) {
+
+      squared[0] = x * (1 / Math.sin(angle));
+      squared[1] = y * (1 / Math.sin(angle));
+    }
+    // X- wall
+    else if (angle > 3 * PiOverFour && angle <= 5 * PiOverFour) {
+      squared[0] = x * (-1 / Math.cos(angle));
+      squared[1] = y * (-1 / Math.cos(angle));
+    }
+    // Y- wall
+    else if (angle > 5 * PiOverFour && angle <= 7 * PiOverFour) {
+      squared[0] = x * (-1 / Math.sin(angle));
+      squared[1] = y * (-1 / Math.sin(angle));
+    }
+
+    if (squared[0] > 1) {
+      squared[0] = 1;
+    } else if (squared[0] < -1) {
+      squared[0] = -1;
+    }
+
+    if (squared[1] > 1) {
+      squared[1] = 1;
+    } else if (squared[1] < -1) {
+      squared[1] = -1;
+    }
+    return squared;
   }
 }

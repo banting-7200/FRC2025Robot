@@ -13,12 +13,15 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AlgaeCommands.IntakeAlgaeCommand;
 import frc.robot.Commands.AlgaeCommands.MoveAlgaeArm;
 import frc.robot.Commands.AlgaeCommands.OutputAlgaeCommand;
+import frc.robot.Commands.DriveCommands.AlgaeObjectAlign;
 import frc.robot.Commands.ElevatorCommands.MoveElevator;
 import frc.robot.Commands.RumbleCommand;
 import frc.robot.Constants.*;
 import frc.robot.Subsystems.*;
 import frc.robot.Vision.Limelight;
+import frc.robot.Vision.PhotonVisionCamera;
 import java.io.File;
+import java.util.function.Supplier;
 
 // import javax.smartcardio.CommandAPDU;
 
@@ -34,6 +37,7 @@ public class RobotContainer {
   public CageClimbSubsystem cageArm;
   public ElevatorSubsystem elevator;
   public Limelight limelight;
+  public PhotonVisionCamera photonCam = new PhotonVisionCamera("7200_color_cam_2");
 
   public ShuffleboardSubsystem shuffle;
   SendableChooser<String> autos;
@@ -41,7 +45,18 @@ public class RobotContainer {
   public boolean isRobotInCoralMode;
   public boolean teleOpMode = false;
 
-  private int testMode = 0;
+  public final Supplier<double[]> joystickSquared =
+      () -> {
+        double[] d = drivebase.squareifyInput(mainController.getLeftX(), mainController.getLeftY());
+        return /* isRedAliance.getAsBoolean() ? new double[] {d[0] * -1, d[1] * -1} : */ d;
+      };
+
+  // Supply right stick input, flipped dependant on alliance.
+  public final Supplier<double[]> rightStickSupplier =
+      () -> {
+        double[] d = {mainController.getRightX() * -1, mainController.getRightY() * -1};
+        return d;
+      };
 
   //   private Commands commands = new Commands();
   //   public boolean isCoralMode;
@@ -80,48 +95,12 @@ public class RobotContainer {
             () -> -mainController.getRightX(),
             () -> -mainController.getRightY());
 
-    // configureBindings();
-    configureNewBindings();
+    configBindings();
     initializeNamedCommands();
     initializeAutos();
   }
 
-  public void configureNewBindings() {
-    // #region Swerve //
-
-    BooleanEvent zeroDriveBase =
-        new BooleanEvent(
-            swerveLoop,
-            () -> mainController.getRawButton(Constants.Control.Main.zeroSwerveDriveButton));
-    zeroDriveBase.rising().ifHigh(() -> drivebase.zeroGyro());
-
-    BooleanEvent enableCreepDrive =
-        new BooleanEvent(
-            swerveLoop,
-            () -> mainController.getRawAxis(Constants.Control.Main.enableCreepDrive) > 0.5);
-
-    enableCreepDrive.ifHigh(() -> drivebase.setCreepDrive(true));
-    // enableCreepDrive.falling().ifHigh(() -> drivebase.setCreepDrive(false));
-    drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
-    // #endregion //
-
-    // BooleanEvent elevatorUp =
-    //     new BooleanEvent(loop, () ->
-    // buttonBox.getRawButton(Control.ButtonBox.elevatorManualLift));
-    // elevatorUp.ifHigh(() -> elevator.setMotorSpeed(Constants.Elevator.elevatorSpeed));
-    // elevatorUp.falling().ifHigh(() -> elevator.stopMotor());
-
-    // BooleanEvent elevatorDown =
-    //     new BooleanEvent(loop, () ->
-    // buttonBox.getRawButton(Control.ButtonBox.elevatorManualFall));
-    // elevatorDown.ifHigh(() -> elevator.setMotorSpeed(-Constants.Elevator.elevatorSpeed));
-    // elevatorDown.falling().ifHigh(() -> elevator.stopMotor());
-
-    // #endregion //
-    // #region Algae //
-    Trigger rumbleTrigger = new Trigger(() -> algaeController.hasAlgae());
-    rumbleTrigger.and(() -> teleOpMode == true).onTrue(new RumbleCommand(5, 1253, mainController));
-
+  public void algaeConfigBindings() {
     BooleanEvent intakeAlgae =
         new BooleanEvent(loop, () -> mainController.getRawButton(Control.Main.intake));
     intakeAlgae
@@ -150,7 +129,44 @@ public class RobotContainer {
                 new OutputAlgaeCommand(algaeController)
                     .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.up))
                     .schedule());
-    // #region Elevator //
+
+    BooleanEvent algaeAutoAlign =
+        mainController.rightTrigger(
+            loop); // TODO: test! If doesn't work, change to usual boolean event stuff
+    algaeAutoAlign.ifHigh(() -> System.out.println("new trigger works"));
+    algaeAutoAlign.ifHigh(
+        () -> new AlgaeObjectAlign(drivebase, photonCam, joystickSquared, rightStickSupplier));
+  }
+
+  public void swerveConfigBindings() {
+    BooleanEvent zeroDriveBase =
+        new BooleanEvent(
+            swerveLoop,
+            () -> mainController.getRawButton(Constants.Control.Main.zeroSwerveDriveButton));
+    zeroDriveBase.rising().ifHigh(() -> drivebase.zeroGyro());
+
+    BooleanEvent enableCreepDrive =
+        new BooleanEvent(
+            swerveLoop,
+            () -> mainController.getRawAxis(Constants.Control.Main.enableCreepDrive) > 0.5);
+
+    enableCreepDrive.ifHigh(() -> drivebase.setCreepDrive(true));
+    drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
+  }
+
+  public void cageConfigBindings() {
+    BooleanEvent cageUpEvent = buttonBox.povUp(loop);
+    cageUpEvent.ifHigh(() -> cageArm.increaseSetpoint());
+
+    BooleanEvent cageDownEvent = buttonBox.povDown(loop);
+    cageDownEvent.ifHigh(() -> cageArm.decreaseSetpoint());
+
+    BooleanEvent reZeroCageArm = mainController.button(Control.Main.zeroClimberButton, loop);
+    reZeroCageArm.rising().ifHigh(() -> cageArm.doesCodeHaveMotorPriority = true);
+  }
+
+  public void elevatorConfigBindings() {
+
     BooleanEvent zeroElevator =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.reZeroElevator));
     zeroElevator.rising().ifHigh(() -> elevator.zero());
@@ -183,21 +199,6 @@ public class RobotContainer {
                 new MoveElevator(elevator, Elevator.Positions.top)
                     .alongWith(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.shoot))
                     .schedule());
-    // #endregion //
-    // #region Cage //
-    // BooleanEvent climbUp = new BooleanEvent(loop, () -> mainController.getPOV() == 0);
-    // climbUp.ifHigh(() -> cageArm.checkPOVAndMove(mainController.getPOV()));
-
-    // BooleanEvent climbDown = new BooleanEvent(loop, () -> mainController.getPOV() == 180);
-    // climbDown.ifHigh(() -> cageArm.checkPOVAndMove(mainController.getPOV()));
-
-    // BooleanEvent climbDisable = new BooleanEvent(loop, () -> mainController.getPOV() == 90);
-    // climbDisable.ifHigh(() -> cageArm.checkPOVAndMove(mainController.getPOV()));
-
-    BooleanEvent flipMotor =
-        new BooleanEvent(
-            loop, () -> buttonBox.getRawButton(Control.ButtonBox.coralManualRotateLeft));
-    flipMotor.rising().ifHigh(() -> elevator.flipMotor());
 
     BooleanEvent moveUp =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.elevatorManualLift));
@@ -206,17 +207,21 @@ public class RobotContainer {
     BooleanEvent moveDown =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.elevatorManualFall));
     moveDown.ifHigh(() -> elevator.moveDown());
-
-    // #endregion //
   }
 
-  public void configureBindings() {
+  public void configBindings() {
+    Trigger rumbleTrigger = new Trigger(() -> algaeController.hasAlgae());
+    rumbleTrigger.onTrue(new RumbleCommand(5, 1253, mainController).onlyIf(() -> teleOpMode == true));
 
-    BooleanEvent switchTestMode =
+    BooleanEvent flipMotor =
         new BooleanEvent(
-            testLoop, () -> mainController.getRawButton(Constants.Control.Main.switchTestMode));
-
-    switchTestMode.rising().ifHigh(() -> testMode++);
+            loop, () -> buttonBox.getRawButton(Control.ButtonBox.coralManualRotateLeft));
+    flipMotor.rising().ifHigh(() -> elevator.flipMotor());
+    // Bindings Methods //
+    elevatorConfigBindings();
+    algaeConfigBindings();
+    cageConfigBindings();
+    swerveConfigBindings();
   }
 
   public void teleopPeriodic() {
@@ -224,8 +229,9 @@ public class RobotContainer {
     swerveLoop.poll();
     loop.poll();
     elevator.run();
+    cageArm.run();
   }
-
+  
   public void turnOffLimelight() {
     limelight.setLight(false);
   }

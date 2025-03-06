@@ -9,16 +9,17 @@ public final class Constants {
   public final class Climber {
     public static final double Upspeed = 1;
     public static final double downSpeed = -1;
+    public static final int limitSwitchID = 9;
 
     public final class PID {
-      public static final double P = 0;
+      public static final double P = 0.3;
       public static final double I = 0;
-      public static final double D = 0;
+      public static final double D = 0.005;
     }
 
     public final class Positions {
-      public static final double armUp = 0;
-      public static final double armDown = 0;
+      public static final double armOut = 90;
+      public static final double armIn = 0;
     }
   }
 
@@ -155,6 +156,7 @@ public final class Constants {
       public static final double rightXDeadband = 0.1;
       public static final double rightYDeadband = 0.1;
       public static final int zeroSwerveDriveButton = XboxController.Button.kA.value;
+      public static final int zeroClimberButton = XboxController.Button.kB.value;
       public static final int enableCreepDrive = XboxController.Axis.kLeftTrigger.value;
       public static final int switchTestMode = XboxController.Button.kY.value;
       public static final int intake = XboxController.Button.kLeftBumper.value;
