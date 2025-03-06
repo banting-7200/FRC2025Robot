@@ -21,7 +21,8 @@ public class IntakeAlgaeCommand extends Command {
 
   @Override
   public void execute() {
-    System.out.println("intaking algae" + algaeController.intakeMotor.getEncoder().getVelocity());
+    // System.out.println("intaking algae" +
+    // algaeController.intakeMotor.getEncoder().getVelocity());
     algaeController.moveToDownPosition();
     algaeController.intake();
   }

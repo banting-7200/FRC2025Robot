@@ -5,6 +5,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Subsystems.AlgaeIntakeSubsystem;
 import frc.robot.Subsystems.SwerveSubsystem;
 import frc.robot.Vision.PhotonVisionCamera;
 import java.util.function.Supplier;
@@ -13,6 +14,7 @@ public class AlgaeObjectAlign extends Command {
 
   private SwerveSubsystem swerveSubsystem = null;
   private final PhotonVisionCamera photonCam;
+  private AlgaeIntakeSubsystem algaeController;
 
   private final PIDController positionController;
   private final PIDController rotationController;
@@ -32,18 +34,20 @@ public class AlgaeObjectAlign extends Command {
       SwerveSubsystem swerveSubsystem,
       PhotonVisionCamera photonCam,
       Supplier<double[]> leftJoystick,
-      Supplier<double[]> rightJoystick) {
+      Supplier<double[]> rightJoystick,
+      AlgaeIntakeSubsystem algaeController) {
     //
     this.swerveSubsystem = swerveSubsystem;
     this.photonCam = photonCam;
+    this.algaeController = algaeController;
 
     this.leftJoystick = leftJoystick;
     this.rightJoystick = rightJoystick;
 
-    positionController = new PIDController(1, 0, 0);
+    positionController = new PIDController(4, 0, 0);
     positionController.setSetpoint(d_algaeArea);
 
-    rotationController = new PIDController(0.035, 0.0001, 0);
+    rotationController = new PIDController(0.15, 0, 0.008);
 
     rotationController.setSetpoint(0);
     rotationController.setTolerance(2, 4);
@@ -59,12 +63,16 @@ public class AlgaeObjectAlign extends Command {
 
   @Override
   public void execute() {
+    System.out.println("something");
     // Debug //
     System.out.println("Current yaw: " + photonCam.getTargetYaw());
     // Data //
     double rotationAdjust = 0;
     // Conditions //
-    if (!photonCam.hasTarget()) return;
+    if (!photonCam.hasTarget()) {
+      System.out.println("NO TARGET");
+      return;
+    }
     // Target Data //
     c_algaeArea = photonCam.getTargetArea();
     // Calculations //
@@ -72,8 +80,8 @@ public class AlgaeObjectAlign extends Command {
     // Drive //
     swerveSubsystem.drive(
         new Translation2d(
-            MathUtil.applyDeadband(-leftJoystick.get()[1], 0.1) * 1.5,
-            MathUtil.applyDeadband(-leftJoystick.get()[0], 0.1) * 1.5),
+            MathUtil.applyDeadband(-leftJoystick.get()[0], 0.1) * 1.5,
+            MathUtil.applyDeadband(leftJoystick.get()[1], 0.1) * 1.5),
         rotationAdjust,
         false);
     /*
@@ -83,7 +91,7 @@ public class AlgaeObjectAlign extends Command {
 
   @Override
   public boolean isFinished() {
-    return false;
+    return algaeController.hasAlgae() || !photonCam.hasTarget();
   }
 
   @Override
@@ -93,9 +101,9 @@ public class AlgaeObjectAlign extends Command {
      */
     swerveSubsystem.lock();
     if (!interrupted) {
-      System.out.println("Ended Note Align successfully");
+      System.out.println("Ended Algae Align successfully");
     } else {
-      System.out.println("Interrupted Note Align Commmand");
+      System.out.println("Interrupted Algae Align Commmand");
     }
   }
 }

@@ -52,25 +52,25 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void run() {
-    System.out.println("Current Position: " + getPosition());
-    System.out.println("Current: " + getCurrent());
+    // System.out.println("Current Position: " + getPosition());
+    // System.out.println("Current: " + getCurrent());
     if (bottomLimitSwitchPressed()) {
       zeroing = false;
       encoder.reset();
       setMotorSpeed(0);
     }
     if (zeroing) {
-      System.out.println("zeroing");
+      // System.out.println("zeroing");
       setMotorSpeed(Elevator.reZeroSpeed * invertedCoefficient);
     } else {
       if (setPoint < getPosition() && (!belowUpperSoftLimits())) {
         setMotorSpeed(0);
-        System.out.println("Above Upper Limits");
+        // System.out.println("Above Upper Limits");
         return;
       }
       if (setPoint > getPosition() && (!aboveLowerSoftLimits() || bottomLimitSwitchPressed())) {
         setMotorSpeed(0);
-        System.out.println("Below Lower Limits");
+        //  System.out.println("Below Lower Limits");
         return;
       }
       double output = pidController.calculate(encoder.getDistance(), setPoint);
@@ -79,7 +79,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         output = MathUtil.clamp(output, -1, 0.5);
       }
       liftMotor.set(output);
-      System.out.println("Moving");
+      // System.out.println("Moving");
     }
   }
 

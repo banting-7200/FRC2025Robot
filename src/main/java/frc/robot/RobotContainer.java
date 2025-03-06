@@ -37,7 +37,7 @@ public class RobotContainer {
   public CageClimbSubsystem cageArm;
   public ElevatorSubsystem elevator;
   public Limelight limelight;
-  public PhotonVisionCamera photonCam = new PhotonVisionCamera("7200_color_cam_2");
+  public PhotonVisionCamera photonCam;
 
   public ShuffleboardSubsystem shuffle;
   SendableChooser<String> autos;
@@ -80,6 +80,7 @@ public class RobotContainer {
     cageArm = new CageClimbSubsystem();
     elevator = new ElevatorSubsystem();
     shuffle = ShuffleboardSubsystem.getInstance();
+    photonCam = new PhotonVisionCamera("algaeAlignCam");
     drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/neo"));
 
     // coralArm = new CoralIntakeSubsystem();
@@ -130,12 +131,21 @@ public class RobotContainer {
                     .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.up))
                     .schedule());
 
-    BooleanEvent algaeAutoAlign =
-        mainController.rightTrigger(
-            loop); // TODO: test! If doesn't work, change to usual boolean event stuff
-    algaeAutoAlign.ifHigh(() -> System.out.println("new trigger works"));
-    algaeAutoAlign.ifHigh(
-        () -> new AlgaeObjectAlign(drivebase, photonCam, joystickSquared, rightStickSupplier));
+    // BooleanEvent algaeAutoAlign = mainController.rightTrigger(loop);
+    // algaeAutoAlign.ifHigh(
+    //     () ->
+    //         new AlgaeObjectAlign(drivebase, photonCam, joystickSquared, rightStickSupplier)
+    //             .schedule());
+
+    Trigger autoAlignToAlgae = new Trigger(() -> mainController.getRightTriggerAxis() > 0.5);
+    autoAlignToAlgae.whileTrue(
+        new AlgaeObjectAlign(
+            drivebase, photonCam, joystickSquared, joystickSquared, algaeController));
+
+    // new JoystickButton(mainController, 2)
+    //     .whileTrue(
+    //         new AlgaeObjectAlign(
+    //             drivebase, photonCam, joystickSquared, rightStickSupplier, algaeController));
   }
 
   public void swerveConfigBindings() {
@@ -211,7 +221,8 @@ public class RobotContainer {
 
   public void configBindings() {
     Trigger rumbleTrigger = new Trigger(() -> algaeController.hasAlgae());
-    rumbleTrigger.onTrue(new RumbleCommand(5, 1253, mainController).onlyIf(() -> teleOpMode == true));
+    rumbleTrigger.onTrue(
+        new RumbleCommand(5, 1253, mainController).onlyIf(() -> teleOpMode == true));
 
     BooleanEvent flipMotor =
         new BooleanEvent(
@@ -231,7 +242,17 @@ public class RobotContainer {
     elevator.run();
     cageArm.run();
   }
-  
+
+  public void robotPeriodic() {
+    // System.out.println(
+    //     "hasTarget :"
+    //         + photonCam.hasTarget()
+    //         + " targetYaw: "
+    //         + photonCam.getTargetYaw()
+    //         + " targetPitch: "
+    //         + photonCam.getTargetPitch());
+  }
+
   public void turnOffLimelight() {
     limelight.setLight(false);
   }

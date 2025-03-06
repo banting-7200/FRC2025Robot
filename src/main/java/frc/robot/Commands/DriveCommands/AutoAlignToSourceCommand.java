@@ -56,7 +56,7 @@ public class AutoAlignToSourceCommand extends Command {
   public boolean isFinished() {
     getTagData();
     if (!camera.hasTarget()) {
-      System.out.println("No Target");
+      // System.out.println("No Target");
       return true;
     }
     return (getXtranslation() == 0 && getYtranslation() == 0 && getRotation() == 0);

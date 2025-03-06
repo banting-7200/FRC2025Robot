@@ -15,20 +15,20 @@ public class MoveElevator extends Command {
 
   @Override
   public void initialize() {
-    System.out.println("Moving elevator to " + setpoint);
+    //  System.out.println("Moving elevator to " + setpoint);
     elevator.moveToPosition(setpoint);
   }
 
   @Override
   public void execute() {
-    System.out.println("Current Elevator Position: " + setpoint);
+    // System.out.println("Current Elevator Position: " + setpoint);
     elevator.run();
   }
 
   @Override
   public boolean isFinished() {
     if (elevator.hasReachedSetpoint()) {
-      System.out.println("Done Elevator");
+      // System.out.println("Done Elevator");
       return true;
     }
     return false;
