@@ -47,7 +47,7 @@ public class AlgaeObjectAlign extends Command {
     positionController = new PIDController(4, 0, 0);
     positionController.setSetpoint(d_algaeArea);
 
-    rotationController = new PIDController(0.15, 0, 0.008);
+    rotationController = new PIDController(0.12, 0, 0.01);
 
     rotationController.setSetpoint(0);
     rotationController.setTolerance(2, 4);
@@ -80,8 +80,8 @@ public class AlgaeObjectAlign extends Command {
     // Drive //
     swerveSubsystem.drive(
         new Translation2d(
-            MathUtil.applyDeadband(-leftJoystick.get()[0], 0.1) * 1.5,
-            MathUtil.applyDeadband(leftJoystick.get()[1], 0.1) * 1.5),
+            MathUtil.applyDeadband(-leftJoystick.get()[0], 0.1) * 2.5,
+            MathUtil.applyDeadband(leftJoystick.get()[1], 0.1) * 2.5),
         rotationAdjust,
         false);
     /*
