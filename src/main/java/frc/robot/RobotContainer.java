@@ -185,14 +185,14 @@ public class RobotContainer {
                     .schedule());
     // #endregion //
     // #region Cage //
-    BooleanEvent climbUp = new BooleanEvent(loop, () -> mainController.getPOV() == 0);
-    climbUp.ifHigh(() -> cageArm.checkPOVAndMove(mainController.getPOV()));
+    // BooleanEvent climbUp = new BooleanEvent(loop, () -> mainController.getPOV() == 0);
+    // climbUp.ifHigh(() -> cageArm.checkPOVAndMove(mainController.getPOV()));
 
-    BooleanEvent climbDown = new BooleanEvent(loop, () -> mainController.getPOV() == 180);
-    climbDown.ifHigh(() -> cageArm.checkPOVAndMove(mainController.getPOV()));
+    // BooleanEvent climbDown = new BooleanEvent(loop, () -> mainController.getPOV() == 180);
+    // climbDown.ifHigh(() -> cageArm.checkPOVAndMove(mainController.getPOV()));
 
-    BooleanEvent climbDisable = new BooleanEvent(loop, () -> mainController.getPOV() == 90);
-    climbDisable.ifHigh(() -> cageArm.checkPOVAndMove(mainController.getPOV()));
+    // BooleanEvent climbDisable = new BooleanEvent(loop, () -> mainController.getPOV() == 90);
+    // climbDisable.ifHigh(() -> cageArm.checkPOVAndMove(mainController.getPOV()));
 
     BooleanEvent flipMotor =
         new BooleanEvent(

@@ -23,8 +23,8 @@ public final class Constants {
   }
 
   public final class Elevator {
-    public static final double reZeroSpeed = 0.5;
-    public static final double manualSpeed = 50;
+    public static final double reZeroSpeed = 0.7;
+    public static final double manualSpeed = 100;
 
     // public static final double elevatorSpeed = 0.4;
 
@@ -197,6 +197,8 @@ public final class Constants {
     public static final int algaePivotID = 3;
     public static final int algaeIntakeID = 4;
     public static final int climberID = 7;
+
+    public static final int climberBottomLimitID = 5; // Digital port
   }
 
   public final class CommandTimes {
