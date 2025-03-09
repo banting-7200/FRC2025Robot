@@ -52,9 +52,10 @@ public final class Constants {
       public static double coralTwo = 0;
       public static double coralThree = 0;
       public static double coralFour = 0;
-      public static double algaeOne = -21100;
-      public static double mediumDriveZone = -22000;
-      public static double algaeTwo = -33000;
+      public static double processor = 0;
+      public static double algaeOne = -21000;
+      public static double mediumDriveZone = -31000;
+      public static double algaeTwo = -32600;
       public static double floorLevel = 0;
       public static double carry = 0;
       public static double top = -51000;

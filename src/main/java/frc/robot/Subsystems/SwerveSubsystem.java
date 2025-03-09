@@ -17,6 +17,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -756,5 +757,14 @@ public class SwerveSubsystem extends SubsystemBase {
       squared[1] = -1;
     }
     return squared;
+  }
+
+  public void addVisionMeasurement(Pose2d robotPose) {
+    swerveDrive.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+    swerveDrive.addVisionMeasurement(robotPose, Timer.getFPGATimestamp());
+  }
+
+  public Rotation2d getYaw() {
+    return swerveDrive.getYaw();
   }
 }

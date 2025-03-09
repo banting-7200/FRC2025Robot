@@ -99,6 +99,10 @@ public class Limelight extends SubsystemBase {
     return ty;
   }
 
+  public double getTagCount() {
+    return LimelightHelpers.getTargetCount(name);
+  }
+
   public double getHorizontalMetres() {
     return LimelightHelpers.getTargetPose_RobotSpace(name)[0];
   }

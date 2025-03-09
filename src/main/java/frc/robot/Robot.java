@@ -64,6 +64,7 @@ public class Robot extends TimedRobot {
     if (autoCommand != null) {
       autoCommand.schedule();
     }
+    // robotContainer.turnOnLimelight();
   }
 
   /** This function is called periodically during autonomous. */
@@ -76,6 +77,7 @@ public class Robot extends TimedRobot {
     new MoveAlgaeArm(
             RobotContainer.getInstance().algaeController, Constants.AlgaeSystem.Positions.up)
         .schedule();
+    // robotContainer.turnOnLimelight();
   }
 
   /** This function is called periodically during operator control. */
@@ -87,7 +89,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    robotContainer.turnOffLimelight();
+  }
 
   /** This function is called periodically when disabled. */
   @Override

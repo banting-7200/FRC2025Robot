@@ -2,6 +2,7 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -74,7 +75,7 @@ public class RobotContainer {
   private EventLoop swerveLoop = new EventLoop();
 
   private RobotContainer() {
-    limelight = new Limelight("Limelight");
+    limelight = new Limelight("limelight");
     // coralController = new CoralIntakeSubsystem();
     algaeController = new AlgaeIntakeSubsystem();
     cageArm = new CageClimbSubsystem();
@@ -241,6 +242,9 @@ public class RobotContainer {
     loop.poll();
     elevator.run();
     cageArm.run();
+    if (limelight.tagCount() >= 1) {
+      drivebase.addVisionMeasurement(limelight.getBotPose(drivebase.getYaw().getDegrees()));
+    }
   }
 
   public void robotPeriodic() {
@@ -255,6 +259,10 @@ public class RobotContainer {
 
   public void turnOffLimelight() {
     limelight.setLight(false);
+  }
+
+  public void turnOnLimelight() {
+    limelight.setLight(true);
   }
 
   public void isTeleOp() {
@@ -290,10 +298,16 @@ public class RobotContainer {
     shuffle.setBoolean("Lower Limit", elevator.bottomLimitSwitchPressed());
     shuffle.setNumber("Current", elevator.getCurrent());
     // shuffle.setBoolean("Upper Limit", elevator.topLimitSwitchPressed());
-    // shuffle.setLayout("Limelight", 1, 3);
-    // shuffle.setNumber("Tag Horizontal", limelight.getHorizontalMetres());
-    // shuffle.setNumber("Tag Distance", limelight.getDistanceMetres());
-    // shuffle.setNumber("Tag Rotation", limelight.getRotationDegrees());
+    shuffle.setLayout("Limelight", 1, 3);
+    if (limelight.getTagCount() >= 1) {
+      shuffle.setNumber("Tag Horizontal", limelight.getHorizontalMetres());
+      shuffle.setNumber("Tag Distance", limelight.getDistanceMetres());
+      shuffle.setNumber("Tag Rotation", limelight.getRotationDegrees());
+    }
+    shuffle.setLayout("Pose", 1, 3);
+    Pose2d currentPose = drivebase.getPose();
+    shuffle.setNumber("X", currentPose.getX());
+    shuffle.setNumber("Y", currentPose.getY());
   }
 
   public void initializeNamedCommands() {
