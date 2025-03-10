@@ -150,17 +150,15 @@ public class RobotContainer {
 
   public void swerveConfigBindings() {
     BooleanEvent zeroDriveBase =
-        new BooleanEvent(
-            swerveLoop,
-            () -> mainController.getRawButton(Constants.Control.Main.zeroSwerveDriveButton));
+        mainController.button(Constants.Control.Main.zeroSwerveDriveButton, swerveLoop);
+
     zeroDriveBase.rising().ifHigh(() -> drivebase.zeroGyro());
 
     BooleanEvent enableCreepDrive =
-        new BooleanEvent(
-            swerveLoop,
-            () -> mainController.getRawAxis(Constants.Control.Main.enableCreepDrive) > 0.5);
+        mainController.axisGreaterThan(Constants.Control.Main.enableCreepDrive, 0.5, swerveLoop);
 
     enableCreepDrive.ifHigh(() -> drivebase.setCreepDrive(true));
+
     drivebase.setDefaultCommand(driveFieldOrientedDirectAngle);
   }
 
@@ -177,31 +175,30 @@ public class RobotContainer {
 
   public void elevatorConfigBindings() {
 
-    BooleanEvent zeroElevator =
-        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.reZeroElevator));
+    BooleanEvent zeroElevator = buttonBox.button(Control.ButtonBox.reZeroElevator, swerveLoop);
+
     zeroElevator.rising().ifHigh(() -> elevator.zero());
 
-    BooleanEvent elevatorFloorLevel =
-        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.floorLevelButton));
+    BooleanEvent elevatorFloorLevel = buttonBox.button(Control.ButtonBox.floorLevelButton, loop);
+
     elevatorFloorLevel
         .rising()
         .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.floorLevel).schedule());
 
-    BooleanEvent elevatorAlgaeOne =
-        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeLevel1));
+    BooleanEvent elevatorAlgaeOne = buttonBox.button(Control.ButtonBox.algaeLevel1, loop);
 
     elevatorAlgaeOne
         .rising()
         .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.algaeOne).schedule());
 
-    BooleanEvent elevatorAlgaeTwo =
-        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeLevel2));
+    BooleanEvent elevatorAlgaeTwo = buttonBox.button(Control.ButtonBox.algaeLevel2, loop);
+
     elevatorAlgaeTwo
         .rising()
         .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.algaeTwo).schedule());
 
-    BooleanEvent elevatorAlgaeNet =
-        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeNet));
+    BooleanEvent elevatorAlgaeNet = buttonBox.button(Control.ButtonBox.algaeNet, loop);
+
     elevatorAlgaeNet
         .rising()
         .ifHigh(
@@ -210,12 +207,12 @@ public class RobotContainer {
                     .alongWith(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.shoot))
                     .schedule());
 
-    BooleanEvent moveUp =
-        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.elevatorManualLift));
+    BooleanEvent moveUp = buttonBox.button(Control.ButtonBox.elevatorManualLift, loop);
+
     moveUp.ifHigh(() -> elevator.moveUp());
 
-    BooleanEvent moveDown =
-        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.elevatorManualFall));
+    BooleanEvent moveDown = buttonBox.button(Control.ButtonBox.elevatorManualFall, loop);
+
     moveDown.ifHigh(() -> elevator.moveDown());
   }
 
@@ -224,9 +221,8 @@ public class RobotContainer {
     rumbleTrigger.onTrue(
         new RumbleCommand(5, 1253, mainController).onlyIf(() -> teleOpMode == true));
 
-    BooleanEvent flipMotor =
-        new BooleanEvent(
-            loop, () -> buttonBox.getRawButton(Control.ButtonBox.coralManualRotateLeft));
+    BooleanEvent flipMotor = buttonBox.button(Control.ButtonBox.coralManualRotateLeft, loop);
+
     flipMotor.rising().ifHigh(() -> elevator.flipMotor());
     // Bindings Methods //
     elevatorConfigBindings();
