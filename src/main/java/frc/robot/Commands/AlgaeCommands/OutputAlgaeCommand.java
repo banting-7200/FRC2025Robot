@@ -1,6 +1,7 @@
 package frc.robot.Commands.AlgaeCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.AlgaeSystem;
 import frc.robot.Subsystems.AlgaeIntakeSubsystem;
 import java.time.Clock;
 
@@ -33,6 +34,7 @@ public class OutputAlgaeCommand extends Command {
 
   @Override
   public void end(boolean interupted) {
+    AlgaeSystem.MotorSpeeds.shootSpeed = .5;
     algaeController.stop();
   }
 }

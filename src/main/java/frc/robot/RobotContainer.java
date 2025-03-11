@@ -114,8 +114,7 @@ public class RobotContainer {
                     .schedule());
 
     BooleanEvent moveAlgaeToShoot =
-        new BooleanEvent(
-            loop, () -> buttonBox.getRawButton(Control.ButtonBox.coralManualRotateRight));
+        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.moveAlgaeToShoot));
     moveAlgaeToShoot
         .rising()
         .ifHigh(() -> new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.shoot).schedule());
@@ -185,6 +184,16 @@ public class RobotContainer {
         .rising()
         .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.floorLevel).schedule());
 
+    BooleanEvent elevatorProcessorLevel = buttonBox.button(Control.ButtonBox.processorLevel, loop);
+
+    elevatorProcessorLevel
+        .rising()
+        .ifHigh(
+            () -> {
+              new MoveElevator(elevator, Elevator.Positions.processor).schedule();
+              AlgaeSystem.MotorSpeeds.shootSpeed = .25;
+            });
+
     BooleanEvent elevatorAlgaeOne = buttonBox.button(Control.ButtonBox.algaeLevel1, loop);
 
     elevatorAlgaeOne
@@ -221,7 +230,7 @@ public class RobotContainer {
     rumbleTrigger.onTrue(
         new RumbleCommand(5, 1253, mainController).onlyIf(() -> teleOpMode == true));
 
-    BooleanEvent flipMotor = buttonBox.button(Control.ButtonBox.coralManualRotateLeft, loop);
+    BooleanEvent flipMotor = buttonBox.button(Control.ButtonBox.inverseElevatorMotor, loop);
 
     flipMotor.rising().ifHigh(() -> elevator.flipMotor());
     // Bindings Methods //

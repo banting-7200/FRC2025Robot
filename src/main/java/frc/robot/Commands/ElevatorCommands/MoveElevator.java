@@ -1,6 +1,8 @@
 package frc.robot.Commands.ElevatorCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.Elevator;
+import frc.robot.RobotContainer;
 import frc.robot.Subsystems.ElevatorSubsystem;
 
 public class MoveElevator extends Command {
@@ -16,6 +18,7 @@ public class MoveElevator extends Command {
   @Override
   public void initialize() {
     //  System.out.println("Moving elevator to " + setpoint);
+    RobotContainer.isProcessorLevel = setpoint == Elevator.Positions.processor;
     elevator.moveToPosition(setpoint);
   }
 
