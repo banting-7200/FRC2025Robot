@@ -3,6 +3,7 @@ package frc.robot.Vision;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Vision.LimelightHelpers.PoseEstimate;
 
@@ -18,8 +19,13 @@ public class Limelight extends SubsystemBase {
     // First, tell Limelight your robot's current orientation
     LimelightHelpers.SetRobotOrientation(name, robotYaw, 0.0, 0.0, 0.0, 0.0, 0.0);
 
+    PoseEstimate limelightMeasurement;
     // Get the pose estimate
-    PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+    if (DriverStation.getAlliance().get() == DriverStation.Alliance.Blue) {
+      limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(name);
+    } else {
+      limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(name);
+    }
     return limelightMeasurement.pose;
   }
 

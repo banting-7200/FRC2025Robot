@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
 
@@ -52,7 +53,7 @@ public final class Constants {
       public static double coralTwo = 0;
       public static double coralThree = 0;
       public static double coralFour = 0;
-      public static double processor = 0;
+      public static double processor = -7000;
       public static double algaeOne = -21000;
       public static double mediumDriveZone = -31000;
       public static double algaeTwo = -32600;
@@ -145,8 +146,25 @@ public final class Constants {
   }
 
   public final class Field {
-    private final AprilTagFieldLayout aprilTagFieldLayout =
+    private static final AprilTagFieldLayout aprilTagFieldLayout =
         AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+
+    public final class Positions {
+      public static final double backwardsOffset = -1;
+      // All for blue side of the field, automatically flips for red side.
+      public static final Pose2d reefTwelveOclock =
+          aprilTagFieldLayout.getTagPose(21).get().toPose2d();
+      public static final Pose2d reefTwoOclock =
+          aprilTagFieldLayout.getTagPose(22).get().toPose2d();
+      public static final Pose2d reefFourOclock =
+          aprilTagFieldLayout.getTagPose(17).get().toPose2d();
+      public static final Pose2d reefSixOclock =
+          aprilTagFieldLayout.getTagPose(18).get().toPose2d();
+      public static final Pose2d reefEightOclock =
+          aprilTagFieldLayout.getTagPose(19).get().toPose2d();
+      public static final Pose2d reefTenOclock =
+          aprilTagFieldLayout.getTagPose(20).get().toPose2d();
+    }
   }
 
   public final class Control {

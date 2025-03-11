@@ -71,7 +71,12 @@ public class AlgaeObjectAlign extends Command {
     // Conditions //
     if (!photonCam.hasTarget()) {
       System.out.println("NO TARGET");
-      return;
+      swerveSubsystem.drive(
+          new Translation2d(
+              MathUtil.applyDeadband(-leftJoystick.get()[1], 0.1) * 2.5,
+              MathUtil.applyDeadband(leftJoystick.get()[0], 0.1) * 2.5),
+          0,
+          false);
     }
     // Target Data //
     c_algaeArea = photonCam.getTargetArea();
@@ -80,8 +85,8 @@ public class AlgaeObjectAlign extends Command {
     // Drive //
     swerveSubsystem.drive(
         new Translation2d(
-            MathUtil.applyDeadband(-leftJoystick.get()[0], 0.1) * 2.5,
-            MathUtil.applyDeadband(leftJoystick.get()[1], 0.1) * 2.5),
+            MathUtil.applyDeadband(-leftJoystick.get()[1], 0.1) * 2.5,
+            MathUtil.applyDeadband(leftJoystick.get()[0], 0.1) * 2.5),
         rotationAdjust,
         false);
     /*
@@ -91,7 +96,7 @@ public class AlgaeObjectAlign extends Command {
 
   @Override
   public boolean isFinished() {
-    return algaeController.hasAlgae() || !photonCam.hasTarget();
+    return algaeController.hasAlgae();
   }
 
   @Override

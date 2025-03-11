@@ -91,6 +91,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     robotContainer.turnOffLimelight();
+    robotContainer.cageArm.hasBeenZeroed = false;
   }
 
   /** This function is called periodically when disabled. */

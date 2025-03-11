@@ -77,6 +77,8 @@ public class ElevatorSubsystem extends SubsystemBase {
       output *= (invertedCoefficient);
       if (getPosition() > Elevator.Positions.algaeOne) {
         output = MathUtil.clamp(output, -1, 0.5);
+      } else {
+        output = MathUtil.clamp(output, -1, 0.7);
       }
       liftMotor.set(output);
       // System.out.println("Moving");

@@ -5,31 +5,26 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
-import frc.robot.Constants.*;
 
 public class CageClimbSubsystem {
   TalonFX falcon500;
   DutyCycleOut dutyCycleMotorRequest = new DutyCycleOut(0.0);
   PositionVoltage positionMotorRequest = new PositionVoltage(0).withSlot(0);
-  DigitalInput bottomLimitSwitch = new DigitalInput(Climber.limitSwitchID);
-
+  DigitalInput bottomLimitSwitch = new DigitalInput(9);
   double currentPosition;
-  double setpoint;
-
-  boolean setpointState;
-  boolean speedControl = false;
-  public boolean doesCodeHaveMotorPriority = true;
+  double setpoint = 100;
+  boolean setpointState = true;
+  boolean doesCodeHaveMotorPriority = true;
+  public boolean hasBeenZeroed = false;
 
   public CageClimbSubsystem() {
-    falcon500 = new TalonFX(deviceIDs.climberID);
-
+    falcon500 = new TalonFX(7, "rio");
     TalonFXConfiguration configs = new TalonFXConfiguration();
     var slot0Configs = configs.Slot0;
-    // Set PID values //
-    slot0Configs.kP = Climber.PID.P;
-    slot0Configs.kI = Climber.PID.I;
-    slot0Configs.kD = Climber.PID.D;
-    // configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive; TODO: FIX INVERSIONS
+    slot0Configs.kP = 0.3;
+    slot0Configs.kI = 0;
+    slot0Configs.kD = 0.005;
+    // headMotor.getConfigurator().apply(configs);
     falcon500.getConfigurator().apply(slot0Configs);
   }
 
@@ -38,29 +33,33 @@ public class CageClimbSubsystem {
   }
 
   public void increaseSetpoint() {
-    setpoint += Climber.Upspeed;
+    setpoint += 2;
+    if (setpoint > 350) setpoint = 350;
   }
 
   public void decreaseSetpoint() {
-    setpoint -= Climber.downSpeed;
+    setpoint -= 1;
+    if (setpoint < 0) setpoint = 0;
   }
 
-  public void toggleSetpoint() {
-    setpointState = !setpointState;
-    if (setpointState) setpoint = Climber.Positions.armOut;
-    if (!setpointState) setpoint = Climber.Positions.armIn;
-  }
+  //   public void toggleSetpoint() {
+  //     setpointState = !setpointState;
+  //     if (setpointState) setpoint = 350;
+  //     if (!setpointState) setpoint = 0;
+  //   }
 
   public void autoZero() {
-    if (doesCodeHaveMotorPriority) {
+    if (!hasBeenZeroed) {
+      doesCodeHaveMotorPriority = true;
       if (!getBottomLimitSwitch()) {
-        falcon500.setControl(dutyCycleMotorRequest.withOutput(-0.1));
+        falcon500.setControl(dutyCycleMotorRequest.withOutput(-0.4));
       } else {
         falcon500.setControl(dutyCycleMotorRequest.withOutput(0));
         setPositionToZero();
-        setpoint = Climber.Positions.armIn;
+        setpoint = 100;
         falcon500.setControl(positionMotorRequest.withPosition(setpoint).withSlot(0));
         doesCodeHaveMotorPriority = false;
+        hasBeenZeroed = true;
       }
     }
   }
@@ -80,7 +79,15 @@ public class CageClimbSubsystem {
 
   public void run() {
     if (!doesCodeHaveMotorPriority) {
+      System.out.println("moving");
       falcon500.setControl(positionMotorRequest.withPosition(setpoint).withSlot(0));
     }
+    System.out.println(
+        "Position = "
+            + getPosition()
+            + " | Setpoint = "
+            + setpoint
+            + " | Limit = "
+            + getBottomLimitSwitch());
   }
 }

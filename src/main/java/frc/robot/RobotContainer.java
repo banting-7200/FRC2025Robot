@@ -3,6 +3,7 @@ package frc.robot;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
@@ -15,6 +16,8 @@ import frc.robot.Commands.AlgaeCommands.IntakeAlgaeCommand;
 import frc.robot.Commands.AlgaeCommands.MoveAlgaeArm;
 import frc.robot.Commands.AlgaeCommands.OutputAlgaeCommand;
 import frc.robot.Commands.DriveCommands.AlgaeObjectAlign;
+import frc.robot.Commands.DriveCommands.AlignToReef;
+import frc.robot.Commands.DriveCommands.TankDrive;
 import frc.robot.Commands.ElevatorCommands.MoveElevator;
 import frc.robot.Commands.RumbleCommand;
 import frc.robot.Constants.*;
@@ -29,7 +32,7 @@ import java.util.function.Supplier;
 public class RobotContainer {
   private XboxController mainController = new XboxController(Control.Main.port);
   public Joystick buttonBox = new Joystick(Control.ButtonBox.port);
-  private SwerveSubsystem drivebase;
+  private static SwerveSubsystem drivebase;
   private Command driveFieldOrientedDirectAngle;
   private static RobotContainer instance;
 
@@ -90,10 +93,10 @@ public class RobotContainer {
         drivebase.driveCommand(
             () ->
                 MathUtil.applyDeadband(
-                    -mainController.getLeftX(), Constants.Control.Main.leftYDeadband),
+                    -mainController.getLeftY(), Constants.Control.Main.leftYDeadband),
             () ->
                 MathUtil.applyDeadband(
-                    mainController.getLeftY(), Constants.Control.Main.leftXDeadband),
+                    -mainController.getLeftX(), Constants.Control.Main.leftXDeadband),
             () -> -mainController.getRightX(),
             () -> -mainController.getRightY());
 
@@ -166,14 +169,14 @@ public class RobotContainer {
   }
 
   public void cageConfigBindings() {
-    BooleanEvent cageUpEvent = buttonBox.povUp(loop);
+    BooleanEvent cageUpEvent = buttonBox.button(Control.ButtonBox.coralManualRotateRight, loop);
     cageUpEvent.ifHigh(() -> cageArm.increaseSetpoint());
 
-    BooleanEvent cageDownEvent = buttonBox.povDown(loop);
+    BooleanEvent cageDownEvent = buttonBox.button(Control.ButtonBox.intake, loop);
     cageDownEvent.ifHigh(() -> cageArm.decreaseSetpoint());
 
-    BooleanEvent reZeroCageArm = mainController.button(Control.Main.zeroClimberButton, loop);
-    reZeroCageArm.rising().ifHigh(() -> cageArm.doesCodeHaveMotorPriority = true);
+    // BooleanEvent reZeroCageArm = mainController.button(Control.Main.zeroClimberButton, loop);
+    // reZeroCageArm.rising().ifHigh(() -> cageArm.hasBeenZeroed = false);
   }
 
   public void elevatorConfigBindings() {
@@ -187,6 +190,12 @@ public class RobotContainer {
     elevatorFloorLevel
         .rising()
         .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.floorLevel).schedule());
+
+    BooleanEvent elevatorProcessor =
+        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.output));
+    elevatorProcessor
+        .rising()
+        .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.processor));
 
     BooleanEvent elevatorAlgaeOne =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeLevel1));
@@ -218,6 +227,13 @@ public class RobotContainer {
     BooleanEvent moveDown =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.elevatorManualFall));
     moveDown.ifHigh(() -> elevator.moveDown());
+
+    Trigger align = new Trigger(() -> mainController.getBButton());
+    align.whileTrue(
+        new AlignToReef(drivebase, elevator, joystickSquared, joystickSquared)
+            .andThen(
+                new TankDrive(drivebase, joystickSquared, joystickSquared)
+                    .alongWith(new IntakeAlgaeCommand(algaeController))));
   }
 
   public void configBindings() {
@@ -241,9 +257,11 @@ public class RobotContainer {
     swerveLoop.poll();
     loop.poll();
     elevator.run();
+    cageArm.autoZero();
     cageArm.run();
     if (limelight.tagCount() >= 1) {
-      drivebase.addVisionMeasurement(limelight.getBotPose(drivebase.getYaw().getDegrees()));
+      double orientation = drivebase.getYaw().getDegrees() + (isRedAlliance() ? 180 : 0);
+      drivebase.addVisionMeasurement(limelight.getBotPose(orientation));
     }
   }
 
@@ -275,6 +293,10 @@ public class RobotContainer {
     autos.addOption("Test Auto", "Test Auto");
     autos.addOption("Centre 1.5 Algae", "Centre 1.5 Algae");
     shuffle.newAutoChooser(autos);
+  }
+
+  public boolean isRedAlliance() {
+    return DriverStation.getAlliance().get() == DriverStation.Alliance.Red;
   }
 
   public Command getAutoCommand() {
