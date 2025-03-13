@@ -63,7 +63,6 @@ public class AlgaeObjectAlign extends Command {
 
   @Override
   public void execute() {
-    System.out.println("something");
     // Debug //
     System.out.println("Current yaw: " + photonCam.getTargetYaw());
     // Data //

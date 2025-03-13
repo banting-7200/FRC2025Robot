@@ -64,12 +64,15 @@ public class Robot extends TimedRobot {
     if (autoCommand != null) {
       autoCommand.schedule();
     }
+    robotContainer.algaeController.setHalfSpeed();
     // robotContainer.turnOnLimelight();
   }
 
   /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    robotContainer.elevator.run();
+  }
 
   /** This function is called once when teleop is enabled. */
   @Override
@@ -77,6 +80,8 @@ public class Robot extends TimedRobot {
     new MoveAlgaeArm(
             RobotContainer.getInstance().algaeController, Constants.AlgaeSystem.Positions.up)
         .schedule();
+    robotContainer.algaeController.setFullSpeed();
+
     // robotContainer.turnOnLimelight();
   }
 

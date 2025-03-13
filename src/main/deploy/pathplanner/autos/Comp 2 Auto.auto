@@ -11,6 +11,56 @@
               {
                 "type": "path",
                 "data": {
+                  "pathName": "Centre to 0C Degrees"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Move Elevator To Coral One"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Move Algae Arm Down"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Output Coral"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 2.5
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
                   "pathName": "0C Degrees to 0 Degrees"
                 }
               },

@@ -11,13 +11,12 @@ import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AlgaeCommands.IntakeAlgaeCommand;
 import frc.robot.Commands.AlgaeCommands.MoveAlgaeArm;
 import frc.robot.Commands.AlgaeCommands.OutputAlgaeCommand;
 import frc.robot.Commands.DriveCommands.AlgaeObjectAlign;
-import frc.robot.Commands.DriveCommands.AlignToReef;
-import frc.robot.Commands.DriveCommands.TankDrive;
 import frc.robot.Commands.ElevatorCommands.MoveElevator;
 import frc.robot.Commands.RumbleCommand;
 import frc.robot.Constants.*;
@@ -49,6 +48,8 @@ public class RobotContainer {
   public boolean isRobotInCoralMode;
   public boolean teleOpMode = false;
 
+  public boolean atProcessorHeight = false;
+
   public final Supplier<double[]> joystickSquared =
       () -> {
         double[] d = drivebase.squareifyInput(mainController.getLeftX(), mainController.getLeftY());
@@ -70,8 +71,8 @@ public class RobotContainer {
     return instance;
   }
 
-  private LightsSubsystem lights =
-      new LightsSubsystem(Configurations.lightPort, Configurations.lightCount);
+  //   private LightsSubsystem lights =
+  //       new LightsSubsystem(Configurations.lightPort, Configurations.lightCount);
 
   private EventLoop loop = new EventLoop();
   private EventLoop testLoop = new EventLoop();
@@ -135,21 +136,10 @@ public class RobotContainer {
                     .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.up))
                     .schedule());
 
-    // BooleanEvent algaeAutoAlign = mainController.rightTrigger(loop);
-    // algaeAutoAlign.ifHigh(
-    //     () ->
-    //         new AlgaeObjectAlign(drivebase, photonCam, joystickSquared, rightStickSupplier)
-    //             .schedule());
-
     Trigger autoAlignToAlgae = new Trigger(() -> mainController.getRightTriggerAxis() > 0.5);
     autoAlignToAlgae.whileTrue(
         new AlgaeObjectAlign(
             drivebase, photonCam, joystickSquared, joystickSquared, algaeController));
-
-    // new JoystickButton(mainController, 2)
-    //     .whileTrue(
-    //         new AlgaeObjectAlign(
-    //             drivebase, photonCam, joystickSquared, rightStickSupplier, algaeController));
   }
 
   public void swerveConfigBindings() {
@@ -174,9 +164,6 @@ public class RobotContainer {
 
     BooleanEvent cageDownEvent = buttonBox.button(Control.ButtonBox.intake, loop);
     cageDownEvent.ifHigh(() -> cageArm.decreaseSetpoint());
-
-    // BooleanEvent reZeroCageArm = mainController.button(Control.Main.zeroClimberButton, loop);
-    // reZeroCageArm.rising().ifHigh(() -> cageArm.hasBeenZeroed = false);
   }
 
   public void elevatorConfigBindings() {
@@ -190,12 +177,14 @@ public class RobotContainer {
     elevatorFloorLevel
         .rising()
         .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.floorLevel).schedule());
+    elevatorFloorLevel.rising().ifHigh(() -> atProcessorHeight = true);
 
     BooleanEvent elevatorProcessor =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.output));
     elevatorProcessor
         .rising()
-        .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.processor));
+        .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.processor).schedule());
+    elevatorProcessor.rising().ifHigh(() -> atProcessorHeight = true);
 
     BooleanEvent elevatorAlgaeOne =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeLevel1));
@@ -204,11 +193,15 @@ public class RobotContainer {
         .rising()
         .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.algaeOne).schedule());
 
+    elevatorAlgaeOne.rising().ifHigh(() -> atProcessorHeight = false);
+
     BooleanEvent elevatorAlgaeTwo =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeLevel2));
     elevatorAlgaeTwo
         .rising()
         .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.algaeTwo).schedule());
+
+    elevatorAlgaeTwo.rising().ifHigh(() -> atProcessorHeight = false);
 
     BooleanEvent elevatorAlgaeNet =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeNet));
@@ -220,6 +213,8 @@ public class RobotContainer {
                     .alongWith(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.shoot))
                     .schedule());
 
+    elevatorAlgaeNet.rising().ifHigh(() -> atProcessorHeight = false);
+
     BooleanEvent moveUp =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.elevatorManualLift));
     moveUp.ifHigh(() -> elevator.moveUp());
@@ -227,13 +222,6 @@ public class RobotContainer {
     BooleanEvent moveDown =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.elevatorManualFall));
     moveDown.ifHigh(() -> elevator.moveDown());
-
-    Trigger align = new Trigger(() -> mainController.getBButton());
-    align.whileTrue(
-        new AlignToReef(drivebase, elevator, joystickSquared, joystickSquared)
-            .andThen(
-                new TankDrive(drivebase, joystickSquared, joystickSquared)
-                    .alongWith(new IntakeAlgaeCommand(algaeController))));
   }
 
   public void configBindings() {
@@ -250,6 +238,15 @@ public class RobotContainer {
     algaeConfigBindings();
     cageConfigBindings();
     swerveConfigBindings();
+
+    // Trigger align = new Trigger(() -> mainController.getBButton());
+    // align.whileTrue(
+    //     new AlignToReef(
+    //             drivebase, elevator, limelight,
+    // isRedAlliance())
+    //         .andThen(
+    //             new TankDrive(drivebase, joystickSquared, joystickSquared)
+    //                 .alongWith(new IntakeAlgaeCommand(algaeController))));
   }
 
   public void teleopPeriodic() {
@@ -257,7 +254,6 @@ public class RobotContainer {
     swerveLoop.poll();
     loop.poll();
     elevator.run();
-    cageArm.autoZero();
     cageArm.run();
     if (limelight.tagCount() >= 1) {
       double orientation = drivebase.getYaw().getDegrees() + (isRedAlliance() ? 180 : 0);
@@ -292,6 +288,7 @@ public class RobotContainer {
     autos.addOption("Centre 1 Algae", "Centre 1 Algae");
     autos.addOption("Test Auto", "Test Auto");
     autos.addOption("Centre 1.5 Algae", "Centre 1.5 Algae");
+    autos.addOption("Comp 2 Auto", "Comp 2 Auto");
     shuffle.newAutoChooser(autos);
   }
 
@@ -340,6 +337,10 @@ public class RobotContainer {
             .andThen(new IntakeAlgaeCommand(algaeController)));
     // NamedCommands.registerCommand("Output Coral", new OutputCoralCommand(coralController));
     NamedCommands.registerCommand("Output Algae", new OutputAlgaeCommand(algaeController));
+    NamedCommands.registerCommand(
+        "Move Elevator To Coral One", new MoveElevator(elevator, Elevator.Positions.coralOne));
+    NamedCommands.registerCommand(
+        "Output Coral", new InstantCommand(() -> algaeController.outputCoral()));
     // NamedCommands.registerCommand(
     //     "Move Coral Arm To Output",
     //     new MoveCoralArm(coralController, CoralSystem.Positions.dropOff));

@@ -12,9 +12,9 @@ public class CageClimbSubsystem {
   PositionVoltage positionMotorRequest = new PositionVoltage(0).withSlot(0);
   DigitalInput bottomLimitSwitch = new DigitalInput(9);
   double currentPosition;
-  double setpoint = 100;
+  double setpoint = 50;
   boolean setpointState = true;
-  boolean doesCodeHaveMotorPriority = true;
+  //   boolean doesCodeHaveMotorPriority = true;
   public boolean hasBeenZeroed = false;
 
   public CageClimbSubsystem() {
@@ -34,12 +34,14 @@ public class CageClimbSubsystem {
 
   public void increaseSetpoint() {
     setpoint += 2;
-    if (setpoint > 350) setpoint = 350;
+    System.out.println(setpoint);
+    if (setpoint > 360) setpoint = 360;
   }
 
   public void decreaseSetpoint() {
-    setpoint -= 1;
-    if (setpoint < 0) setpoint = 0;
+    setpoint -= 2;
+    System.out.println(setpoint);
+    if (setpoint < 20) setpoint = 20;
   }
 
   //   public void toggleSetpoint() {
@@ -47,22 +49,6 @@ public class CageClimbSubsystem {
   //     if (setpointState) setpoint = 350;
   //     if (!setpointState) setpoint = 0;
   //   }
-
-  public void autoZero() {
-    if (!hasBeenZeroed) {
-      doesCodeHaveMotorPriority = true;
-      if (!getBottomLimitSwitch()) {
-        falcon500.setControl(dutyCycleMotorRequest.withOutput(-0.4));
-      } else {
-        falcon500.setControl(dutyCycleMotorRequest.withOutput(0));
-        setPositionToZero();
-        setpoint = 100;
-        falcon500.setControl(positionMotorRequest.withPosition(setpoint).withSlot(0));
-        doesCodeHaveMotorPriority = false;
-        hasBeenZeroed = true;
-      }
-    }
-  }
 
   public double getPosition() {
     currentPosition = falcon500.getPosition().getValueAsDouble();
@@ -78,16 +64,16 @@ public class CageClimbSubsystem {
   }
 
   public void run() {
-    if (!doesCodeHaveMotorPriority) {
-      System.out.println("moving");
+    if (getBottomLimitSwitch()) {
+      setPositionToZero();
+      falcon500.setControl(dutyCycleMotorRequest.withOutput(0));
       falcon500.setControl(positionMotorRequest.withPosition(setpoint).withSlot(0));
+      hasBeenZeroed = true;
     }
-    System.out.println(
-        "Position = "
-            + getPosition()
-            + " | Setpoint = "
-            + setpoint
-            + " | Limit = "
-            + getBottomLimitSwitch());
+    if (hasBeenZeroed) {
+      falcon500.setControl(positionMotorRequest.withPosition(setpoint).withSlot(0));
+    } else {
+      falcon500.setControl(dutyCycleMotorRequest.withOutput(-0.4));
+    }
   }
 }

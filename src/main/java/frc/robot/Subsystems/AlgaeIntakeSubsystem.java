@@ -21,6 +21,7 @@ import frc.robot.Constants.deviceIDs;
 public class AlgaeIntakeSubsystem extends SubsystemBase {
   public double setpoint = AlgaeSystem.Positions.up;
   public boolean isArmUp;
+  public boolean halfSpeed = false;
   public SparkMax pivotMotor;
   public SparkMax intakeMotor;
   public SparkMax intakeMotor2;
@@ -82,6 +83,18 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
     intakeRLimitSwitch = intakeMotor.getReverseLimitSwitch();
   }
 
+  public void setHalfSpeed() {
+    pivotConfig.closedLoop.pid(AlgaeSystem.PID.P / 2, AlgaeSystem.PID.I / 2, AlgaeSystem.PID.D / 2);
+    pivotMotor.configure(
+        pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+  }
+
+  public void setFullSpeed() {
+    pivotConfig.closedLoop.pid(AlgaeSystem.PID.P, AlgaeSystem.PID.I, AlgaeSystem.PID.D);
+    pivotMotor.configure(
+        pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+  }
+
   public void run() {
     // System.out.println("trying to move to " + setpoint + " | Current position = " +
     // getPosition());
@@ -128,8 +141,16 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
     spinIntake(AlgaeSystem.MotorSpeeds.intakeSpeed);
   }
 
+  public void outputCoral() {
+    spinIntake(AlgaeSystem.MotorSpeeds.intakeSpeed / 4);
+  }
+
   public void output() {
     spinIntake(AlgaeSystem.MotorSpeeds.outputSpeed);
+  }
+
+  public void outputProcessor() {
+    spinIntake(AlgaeSystem.MotorSpeeds.outputSpeed / 4);
   }
 
   public void shoot() {

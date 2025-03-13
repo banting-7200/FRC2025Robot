@@ -49,7 +49,7 @@ public final class Constants {
     }
 
     public final class Positions {
-      public static double coralOne = 0;
+      public static double coralOne = -11000;
       public static double coralTwo = 0;
       public static double coralThree = 0;
       public static double coralFour = 0;
@@ -57,7 +57,7 @@ public final class Constants {
       public static double algaeOne = -21000;
       public static double mediumDriveZone = -31000;
       public static double algaeTwo = -32600;
-      public static double floorLevel = 0;
+      public static double floorLevel = -2000;
       public static double carry = 0;
       public static double top = -51000;
       public static double safeZone = 50;
