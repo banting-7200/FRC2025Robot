@@ -68,7 +68,7 @@ public final class Constants {
     public final class MotorSpeeds {
       public static final double intakeSpeed = -0.5;
       public static final double outputSpeed = 0.5;
-      public static final double shootSpeed = 1;
+      public static double shootSpeed = 1; // UNUSED //
     }
 
     public final class PID {
@@ -187,10 +187,10 @@ public final class Constants {
       public static final int port = 1; // unkown referance
       public static final int elevatorManualLift = 11;
       public static final int elevatorManualFall = 10;
-      public static final int coralManualRotateLeft = 9;
-      public static final int coralManualRotateRight = 8;
+      public static final int inverseElevatorMotor = 9; // coralManualRotateLeft
+      public static final int moveAlgaeToShoot = 8; // coralManualRotateRight
       public static final int intake = 7;
-      public static final int output = 6;
+      public static final int processorLevel = 6;
       // Coral //
       public static final int level1Button = 3;
       public static final int level2Button = 2;

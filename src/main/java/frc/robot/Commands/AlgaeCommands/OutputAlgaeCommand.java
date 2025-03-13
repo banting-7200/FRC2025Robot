@@ -26,8 +26,9 @@ public class OutputAlgaeCommand extends Command {
     //   "Outputting Algae " + algaeController.intakeMotor.getEncoder().getVelocity());
     if (RobotContainer.getInstance().atProcessorHeight) {
       algaeController.outputProcessor();
+    } else {
+      algaeController.output();
     }
-    algaeController.output();
   }
 
   @Override
