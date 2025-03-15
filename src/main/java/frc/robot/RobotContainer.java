@@ -110,12 +110,13 @@ public class RobotContainer {
     BooleanEvent coralOutput = mainController.button(Control.Main.coralOutput, loop);
 
     coralOutput.rising().ifHigh(() -> algaeController.outputCoral());
+    coralOutput.falling().ifHigh(() -> algaeController.stop());
 
     BooleanEvent coralArmOut = mainController.button(Control.Main.coralArmOut, loop);
 
     coralArmOut
         .rising()
-        .ifHigh(() -> new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down));
+        .ifHigh(() -> new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down).schedule());
   }
 
   public void algaeConfigBindings() {
@@ -186,7 +187,6 @@ public class RobotContainer {
     elevatorFloorLevel
         .rising()
         .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.floorLevel).schedule());
-
     elevatorFloorLevel.rising().ifHigh(() -> atProcessorHeight = true);
 
     BooleanEvent elevatorProcessor = buttonBox.button(Control.ButtonBox.processorLevel, loop);
@@ -205,7 +205,6 @@ public class RobotContainer {
 
     BooleanEvent elevatorAlgaeTwo =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeLevel2));
-
     elevatorAlgaeTwo
         .rising()
         .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.algaeTwo).schedule());
