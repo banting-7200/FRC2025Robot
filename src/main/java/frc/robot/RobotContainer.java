@@ -106,6 +106,18 @@ public class RobotContainer {
     initializeAutos();
   }
 
+  public void coralConfigBindings() {
+    BooleanEvent coralOutput = mainController.button(Control.Main.coralOutput, loop);
+
+    coralOutput.rising().ifHigh(() -> algaeController.outputCoral());
+
+    BooleanEvent coralArmOut = mainController.button(Control.Main.coralArmOut, loop);
+
+    coralArmOut
+        .rising()
+        .ifHigh(() -> new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down));
+  }
+
   public void algaeConfigBindings() {
     BooleanEvent intakeAlgae =
         new BooleanEvent(loop, () -> mainController.getRawButton(Control.Main.intake));
@@ -234,6 +246,7 @@ public class RobotContainer {
     flipMotor.rising().ifHigh(() -> elevator.flipMotor());
     // Bindings Methods //
     elevatorConfigBindings();
+    coralConfigBindings();
     algaeConfigBindings();
     cageConfigBindings();
     swerveConfigBindings();
