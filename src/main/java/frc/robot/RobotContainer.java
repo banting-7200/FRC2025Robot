@@ -177,7 +177,7 @@ public class RobotContainer {
 
   public void elevatorConfigBindings() {
 
-    BooleanEvent zeroElevator = buttonBox.button(Control.ButtonBox.reZeroElevator, swerveLoop);
+    BooleanEvent zeroElevator = buttonBox.button(Control.ButtonBox.reZeroElevator, loop);
 
     zeroElevator.rising().ifHigh(() -> elevator.zero());
 
@@ -186,24 +186,14 @@ public class RobotContainer {
     elevatorFloorLevel
         .rising()
         .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.floorLevel).schedule());
+
     elevatorFloorLevel.rising().ifHigh(() -> atProcessorHeight = true);
 
-    BooleanEvent elevatorProcessor =
-        new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.processorLevel));
+    BooleanEvent elevatorProcessor = buttonBox.button(Control.ButtonBox.processorLevel, loop);
     elevatorProcessor
         .rising()
         .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.processor).schedule());
     elevatorProcessor.rising().ifHigh(() -> atProcessorHeight = true);
-
-    BooleanEvent elevatorProcessorLevel = buttonBox.button(Control.ButtonBox.processorLevel, loop);
-
-    elevatorProcessorLevel
-        .rising()
-        .ifHigh(
-            () -> {
-              new MoveElevator(elevator, Elevator.Positions.processor).schedule();
-              AlgaeSystem.MotorSpeeds.shootSpeed = .25;
-            });
 
     BooleanEvent elevatorAlgaeOne = buttonBox.button(Control.ButtonBox.algaeLevel1, loop);
 
@@ -211,11 +201,16 @@ public class RobotContainer {
         .rising()
         .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.algaeOne).schedule());
 
+    elevatorAlgaeOne.rising().ifHigh(() -> atProcessorHeight = false);
+
     BooleanEvent elevatorAlgaeTwo =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeLevel2));
+
     elevatorAlgaeTwo
         .rising()
         .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.algaeTwo).schedule());
+
+    elevatorAlgaeTwo.rising().ifHigh(() -> atProcessorHeight = false);
 
     BooleanEvent elevatorAlgaeNet =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.algaeNet));
@@ -226,6 +221,8 @@ public class RobotContainer {
                 new MoveElevator(elevator, Elevator.Positions.top)
                     .alongWith(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.shoot))
                     .schedule());
+
+    elevatorAlgaeNet.rising().ifHigh(() -> atProcessorHeight = false);
 
     BooleanEvent moveUp =
         new BooleanEvent(loop, () -> buttonBox.getRawButton(Control.ButtonBox.elevatorManualLift));

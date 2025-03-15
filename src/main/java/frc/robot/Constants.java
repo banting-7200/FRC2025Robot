@@ -49,14 +49,14 @@ public final class Constants {
     }
 
     public final class Positions {
-      public static double coralOne = -11000;
+      public static double coralOne = -10000;
       public static double coralTwo = 0;
       public static double coralThree = 0;
       public static double coralFour = 0;
       public static double processor = -7000;
-      public static double algaeOne = -21000;
+      public static double algaeOne = -22000;
       public static double mediumDriveZone = -31000;
-      public static double algaeTwo = -32600;
+      public static double algaeTwo = -33000;
       public static double floorLevel = -2000;
       public static double carry = 0;
       public static double top = -51000;
