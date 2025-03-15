@@ -19,14 +19,14 @@
                 "data": {
                   "name": "Move Elevator To Coral One"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Move Algae Arm Down"
+                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Move Algae Arm Down"
           }
         },
         {
