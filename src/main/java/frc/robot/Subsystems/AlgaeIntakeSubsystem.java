@@ -142,7 +142,7 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
   }
 
   public void outputCoral() {
-    spinIntake(AlgaeSystem.MotorSpeeds.intakeSpeed / 4);
+    spinIntake(AlgaeSystem.MotorSpeeds.intakeSpeed / 8);
   }
 
   public void output() {

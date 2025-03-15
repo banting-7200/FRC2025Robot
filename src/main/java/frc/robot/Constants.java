@@ -180,6 +180,9 @@ public final class Constants {
       public static final int switchTestMode = XboxController.Button.kY.value;
       public static final int intake = XboxController.Button.kLeftBumper.value;
       public static final int output = XboxController.Button.kRightBumper.value;
+      // Coral //
+      public static final int coralArmOut = XboxController.Button.kY.value;
+      public static final int coralOutput = XboxController.Button.kX.value;
     }
 
     public final class ButtonBox {
