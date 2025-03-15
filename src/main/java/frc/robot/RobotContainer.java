@@ -178,7 +178,7 @@ public class RobotContainer {
 
   public void elevatorConfigBindings() {
 
-    BooleanEvent zeroElevator = buttonBox.button(Control.ButtonBox.reZeroElevator, loop);
+    BooleanEvent zeroElevator = buttonBox.button(Control.ButtonBox.reZeroElevator, swerveLoop);
 
     zeroElevator.rising().ifHigh(() -> elevator.zero());
 

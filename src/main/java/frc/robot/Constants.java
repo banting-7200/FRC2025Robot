@@ -56,7 +56,7 @@ public final class Constants {
       public static double processor = -7000;
       public static double algaeOne = -22000;
       public static double mediumDriveZone = -31000;
-      public static double algaeTwo = -33000;
+      public static double algaeTwo = -34000;
       public static double floorLevel = -2000;
       public static double carry = 0;
       public static double top = -51000;
