@@ -195,8 +195,9 @@ public class RobotContainer {
         .ifHigh(
             () ->
                 new MoveElevator(elevator, Elevator.Positions.processor)
-                    .andThen(new MoveAlgaeArm(algaeController, 75))
+                    .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.processor))
                     .schedule());
+    
     elevatorProcessor.rising().ifHigh(() -> atProcessorHeight = true);
 
     BooleanEvent elevatorAlgaeOne = buttonBox.button(Control.ButtonBox.algaeLevel1, loop);

@@ -81,6 +81,7 @@ public final class Constants {
       public static final double up = 31.9;
       public static final double down = 99.3;
       public static final double shoot = 45;
+      public static final double processor = 75;
       public static final double safetyRange =
           5; // safteyRange is the range that the algae motor has to be within for the other arm to
       // be able to move up
