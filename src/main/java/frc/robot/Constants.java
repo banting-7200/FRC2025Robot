@@ -53,8 +53,8 @@ public final class Constants {
       public static double coralTwo = 0;
       public static double coralThree = 0;
       public static double coralFour = 0;
-      public static double processor = -7000;
-      public static double algaeOne = -23000;
+      public static double processor = 0;
+      public static double algaeOne = -21000;
       public static double mediumDriveZone = -31000;
       public static double algaeTwo = -34000;
       public static double floorLevel = 0;
