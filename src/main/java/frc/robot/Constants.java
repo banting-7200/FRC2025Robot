@@ -27,6 +27,7 @@ public final class Constants {
   public final class Elevator {
     public static final double reZeroSpeed = 0.7;
     public static final double manualSpeed = 100;
+    public static double elevatorSpeed = 1; // RPS (Rotations Per Second)
 
     // public static final double elevatorSpeed = 0.4;
 

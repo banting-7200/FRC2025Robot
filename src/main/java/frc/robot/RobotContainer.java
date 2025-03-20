@@ -197,7 +197,7 @@ public class RobotContainer {
                 new MoveElevator(elevator, Elevator.Positions.processor)
                     .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.processor))
                     .schedule());
-    
+
     elevatorProcessor.rising().ifHigh(() -> atProcessorHeight = true);
 
     BooleanEvent elevatorAlgaeOne = buttonBox.button(Control.ButtonBox.algaeLevel1, loop);
@@ -326,6 +326,7 @@ public class RobotContainer {
     shuffle.setNumber("Height", elevator.getPosition());
     shuffle.setBoolean("Lower Limit", elevator.bottomLimitSwitchPressed());
     shuffle.setNumber("Current", elevator.getCurrent());
+    Elevator.elevatorSpeed = shuffle.getNumber("Elevator Speed (RPS (Rotations Per Second))");
     // shuffle.setBoolean("Upper Limit", elevator.topLimitSwitchPressed());
     shuffle.setLayout("Limelight", 1, 3);
     if (limelight.getTagCount() >= 1) {
