@@ -326,7 +326,7 @@ public class RobotContainer {
     shuffle.setNumber("Height", elevator.getPosition());
     shuffle.setBoolean("Lower Limit", elevator.bottomLimitSwitchPressed());
     shuffle.setNumber("Current", elevator.getCurrent());
-    Elevator.elevatorSpeed = shuffle.getNumber("Elevator Speed (RPS (Rotations Per Second))");
+    // sElevator.elevatorSpeed = shuffle.getNumber("Elevator Speed (-1 to 1 (Percentage))");
     // shuffle.setBoolean("Upper Limit", elevator.topLimitSwitchPressed());
     shuffle.setLayout("Limelight", 1, 3);
     if (limelight.getTagCount() >= 1) {

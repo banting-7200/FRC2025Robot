@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -27,7 +28,7 @@ public final class Constants {
   public final class Elevator {
     public static final double reZeroSpeed = 0.7;
     public static final double manualSpeed = 100;
-    public static double elevatorSpeed = 1; // RPS (Rotations Per Second)
+    public static double elevatorSpeed = 0.3; // -1 to 1 (Percentage)
 
     // public static final double elevatorSpeed = 0.4;
 
@@ -37,7 +38,8 @@ public final class Constants {
     }
 
     public final class MotorConfig {
-      public static final boolean inverted = true;
+      public static final InvertedValue inverted = InvertedValue.Clockwise_Positive;
+
       public static final int canID = 1;
       public static final double positionConversionFactor = 360;
       public static final double velocityConversionFactor = 1;
@@ -55,12 +57,12 @@ public final class Constants {
       public static double coralThree = 0;
       public static double coralFour = 0;
       public static double processor = 0;
-      public static double algaeOne = -21000;
+      public static double algaeOne = -20265;
       public static double mediumDriveZone = -31000;
-      public static double algaeTwo = -34000;
+      public static double algaeTwo = -33000;
       public static double floorLevel = 0;
       public static double carry = 0;
-      public static double top = -51000;
+      public static double top = -49000;
       public static double safeZone = 50;
     }
   }
