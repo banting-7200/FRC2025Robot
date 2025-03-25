@@ -19,14 +19,14 @@
                 "data": {
                   "name": "Move Elevator To Coral One"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Move Algae Arm Down"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Move Algae Arm Down"
           }
         },
         {
@@ -59,19 +59,13 @@
                 }
               },
               {
-                "type": "named",
-                "data": {
-                  "name": "Move Elevator To Algae 1"
-                }
-              },
-              {
                 "type": "race",
                 "data": {
                   "commands": [
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 5.0
+                        "waitTime": 4.0
                       }
                     },
                     {

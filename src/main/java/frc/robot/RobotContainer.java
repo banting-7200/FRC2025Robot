@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -49,6 +50,7 @@ public class RobotContainer {
   public boolean teleOpMode = false;
 
   public boolean atProcessorHeight = false;
+  public boolean atNetHeight = false;
 
   public final Supplier<double[]> joystickSquared =
       () -> {
@@ -142,10 +144,22 @@ public class RobotContainer {
 
     outputAlgae
         .rising()
+        .and(() -> !atNetHeight)
         .ifHigh(
             () ->
                 new OutputAlgaeCommand(algaeController)
                     .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.up))
+                    .schedule());
+
+    outputAlgae
+        .rising()
+        .and(() -> atNetHeight)
+        .ifHigh(
+            () ->
+                new OutputAlgaeCommand(algaeController)
+                    .andThen(
+                        new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.up)
+                            .alongWith(new MoveElevator(elevator, Elevator.Positions.floorLevel)))
                     .schedule());
 
     Trigger autoAlignToAlgae = new Trigger(() -> mainController.getRightTriggerAxis() > 0.5);
@@ -195,7 +209,7 @@ public class RobotContainer {
         .ifHigh(
             () ->
                 new MoveElevator(elevator, Elevator.Positions.processor)
-                    .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.processor))
+                    .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.down))
                     .schedule());
 
     elevatorProcessor.rising().ifHigh(() -> atProcessorHeight = true);
@@ -294,12 +308,7 @@ public class RobotContainer {
   }
 
   public void initializeAutos() {
-    autos = new SendableChooser<>();
-    autos.addOption("Centre 1 Algae", "Centre 1 Algae");
-    autos.addOption("Test Auto", "Test Auto");
-    autos.addOption("Centre 1.5 Algae", "Centre 1.5 Algae");
-    autos.addOption("Comp 2 Auto", "Comp 2 Auto");
-    shuffle.newAutoChooser(autos);
+    shuffle.newAutoChooser(AutoBuilder.buildAutoChooser());
   }
 
   public boolean isRedAlliance() {
@@ -307,7 +316,7 @@ public class RobotContainer {
   }
 
   public Command getAutoCommand() {
-    return drivebase.getAutonomousCommand(shuffle.getAuto());
+    return shuffle.getAuto();
   }
 
   public void updateShuffle() {

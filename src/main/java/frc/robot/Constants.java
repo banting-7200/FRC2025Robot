@@ -56,7 +56,7 @@ public final class Constants {
       public static double coralTwo = 0;
       public static double coralThree = 0;
       public static double coralFour = 0;
-      public static double processor = 0;
+      public static double processor = 4000;
       public static double algaeOne = -20265;
       public static double mediumDriveZone = -31000;
       public static double algaeTwo = -33000;
@@ -84,7 +84,6 @@ public final class Constants {
       public static final double up = 31.9;
       public static final double down = 99.3;
       public static final double shoot = 45;
-      public static final double processor = 75;
       public static final double safetyRange =
           5; // safteyRange is the range that the algae motor has to be within for the other arm to
       // be able to move up

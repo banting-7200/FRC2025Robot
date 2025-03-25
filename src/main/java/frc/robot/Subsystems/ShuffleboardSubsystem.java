@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.shuffleboard.SimpleWidget;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class ShuffleboardSubsystem {
   private ShuffleboardTab tab;
   private List<String> entryNames = new ArrayList<String>();
   private List<GenericEntry> entries = new ArrayList<GenericEntry>();
-  private SendableChooser<String> autos;
+  private SendableChooser<Command> autos;
   private SimpleWidget lights;
 
   // Constructor //
@@ -292,13 +293,13 @@ public class ShuffleboardSubsystem {
    * @param inAutos
    */
   public void newAutoChooser(
-      SendableChooser<String>
+      SendableChooser<Command>
           inAutos) { // creates drop down containing autos, doesn't add any functionality to the
     // basic function, just contains everything in the subsystem
     setTab("Pre-Match");
     autos = inAutos;
-    autos.setDefaultOption("Comp 2 Auto", "Comp 2 Auto");
     tab.add("Autos", autos).withSize(2, 1);
+    SmartDashboard.putData(autos);
   }
 
   /**
@@ -306,7 +307,7 @@ public class ShuffleboardSubsystem {
    *
    * @return The auto
    */
-  public String getAuto() { // returns auto from drop down;
+  public Command getAuto() { // returns auto from drop down;
     return (autos.getSelected());
   }
 

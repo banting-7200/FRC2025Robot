@@ -33,7 +33,7 @@ public class OutputAlgaeCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return (timer.millis() - timeoutTime) >= 1200;
+    return (timer.millis() - timeoutTime) >= 500;
   }
 
   @Override

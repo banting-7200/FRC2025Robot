@@ -71,7 +71,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     if (zeroing) { // Currently Zeroing //
-      liftMotor.set(0.4);
+      liftMotor.set(0.4 * invertedCoefficient);
     } else // Not Zeroing //
     {
       // If Above Upper Soft Limits //
@@ -93,7 +93,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       else output = MathUtil.clamp(output, -1, .75);
 
       // create a position closed-loop request, voltage output, slot 0 configs
-      liftMotor.set(output);
+      liftMotor.set(output * invertedCoefficient);
     }
   }
 
