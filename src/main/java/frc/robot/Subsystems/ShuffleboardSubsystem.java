@@ -298,7 +298,7 @@ public class ShuffleboardSubsystem {
     // basic function, just contains everything in the subsystem
     setTab("Pre-Match");
     autos = inAutos;
-    tab.add("Autos", autos).withSize(2, 1);
+    tab.add("Autos", autos);
     SmartDashboard.putData(autos);
   }
 

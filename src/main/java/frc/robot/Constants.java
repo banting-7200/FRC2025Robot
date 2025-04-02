@@ -56,7 +56,7 @@ public final class Constants {
       public static double coralTwo = 0;
       public static double coralThree = 0;
       public static double coralFour = 0;
-      public static double processor = 4000;
+      public static double processor = -2000;
       public static double algaeOne = -20265;
       public static double mediumDriveZone = -31000;
       public static double algaeTwo = -33000;

@@ -88,7 +88,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       double output =
           pidController.calculate(encoder.getDistance(), setPoint); // Calculation can't be a double
 
-      if (getPosition() > Elevator.Positions.algaeOne / 4) // If Below First Level //
+      if (getPosition() > Elevator.Positions.algaeOne / 8) // If Below First Level //
       output = MathUtil.clamp(output, -.75, .25);
       else output = MathUtil.clamp(output, -1, .75);
 
