@@ -6,14 +6,13 @@
 // Directory //
 package frc.robot.Subsystems;
 
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
@@ -22,67 +21,84 @@ import frc.robot.Constants.*;
 
 // Subsystem //
 public class ElevatorSubsystem extends SubsystemBase {
-  SparkMax liftMotor;
-  SparkMaxConfig config;
-  double setPoint = Elevator.Positions.floorLevel;
+  // Motor Data //
+  TalonFX liftMotor;
+  DutyCycleOut dutyCycleMotorRequest = new DutyCycleOut(0.0);
   Encoder encoder;
   PIDController pidController;
-  ElevatorFeedforward feedforward;
+  // Motor Position //
+  double setPoint = Elevator.Positions.floorLevel;
   DigitalInput bottomLimitSwitch;
   // DigitalInput topLimitSwitch;
-
-  boolean zeroing = true;
-
+  boolean zeroing = true; // Zero robot when it starts //
   double invertedCoefficient = 1;
 
   double manualDifference = Elevator.manualSpeed;
 
   public ElevatorSubsystem() {
-    liftMotor = new SparkMax(deviceIDs.elevatorID, MotorType.kBrushless);
-    config = new SparkMaxConfig();
-    config.inverted(Elevator.MotorConfig.inverted).idleMode(IdleMode.kBrake).smartCurrentLimit(40);
-    liftMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    // Motor //
+    liftMotor = new TalonFX(deviceIDs.elevatorID, "rio");
+    // Configurations //
+    TalonFXConfiguration configs = new TalonFXConfiguration();
+    // Motor Configurations //
+    MotorOutputConfigs motorConfigs = configs.MotorOutput;
+
+    motorConfigs
+        .withInverted(InvertedValue.CounterClockwise_Positive)
+        .withNeutralMode(NeutralModeValue.Brake);
+
+    liftMotor.getConfigurator().apply(motorConfigs);
+    // Encoder Setup //
     encoder = new Encoder(0, 1);
     encoder.setDistancePerPulse(1);
+    // PID Setup //
     pidController = new PIDController(Elevator.PID.P, Elevator.PID.I, Elevator.PID.D);
-    feedforward = new ElevatorFeedforward(0, 0.1, 0);
-    pidController.setTolerance(200);
+    pidController.setTolerance(150);
+    // Limit Switch Setup //
     bottomLimitSwitch = new DigitalInput(Elevator.IDs.bottomLimitSwitchID);
     // topLimitSwitch = new DigitalInput(Elevator.IDs.topLimitSwitchID);
   }
 
   public void run() {
-    // System.out.println("Current Position: " + getPosition());
-    // System.out.println("Current: " + getCurrent());
-    if (bottomLimitSwitchPressed()) {
+    System.out.println("Elevator Position: " + getPosition());
+    // When Limit Switch is hit //
+    if (bottomLimitSwitchPressed()) { // When Done Zeroing //
+      // Zero && Stop Motor //
+      setPositionToZero();
+      stopMotor();
+      // Stop Zeroing //
       zeroing = false;
-      encoder.reset();
-      setMotorSpeed(0);
     }
-    if (zeroing) {
-      // System.out.println("zeroing");
-      setMotorSpeed(Elevator.reZeroSpeed * invertedCoefficient);
-    } else {
+
+    if (zeroing) { // Currently Zeroing //
+      liftMotor.set(0.4 * invertedCoefficient);
+    } else // Not Zeroing //
+    {
+      // If Above Upper Soft Limits //
       if (setPoint < getPosition() && (!belowUpperSoftLimits())) {
-        setMotorSpeed(0);
-        // System.out.println("Above Upper Limits");
+        stopMotor();
         return;
       }
+
+      // If Below Lower Soft Limits //
       if (setPoint > getPosition() && (!aboveLowerSoftLimits() || bottomLimitSwitchPressed())) {
-        setMotorSpeed(0);
-        //  System.out.println("Below Lower Limits");
+        stopMotor();
         return;
       }
-      double output = pidController.calculate(encoder.getDistance(), setPoint);
-      output *= (invertedCoefficient);
-      if (getPosition() > Elevator.Positions.algaeOne) {
-        output = MathUtil.clamp(output, -1, 0.5);
-      } else {
-        output = MathUtil.clamp(output, -1, 0.7);
-      }
-      liftMotor.set(output);
-      // System.out.println("Moving");
+      double output =
+          pidController.calculate(encoder.getDistance(), setPoint); // Calculation can't be a double
+
+      if (getPosition() > Elevator.Positions.algaeOne / 8) // If Below First Level //
+      output = MathUtil.clamp(output, -.75, .25);
+      else output = MathUtil.clamp(output, -1, .75);
+
+      // create a position closed-loop request, voltage output, slot 0 configs
+      liftMotor.set(output * invertedCoefficient);
     }
+  }
+
+  public void setPositionToZero() {
+    encoder.reset();
   }
 
   public void zero() {
@@ -114,12 +130,16 @@ public class ElevatorSubsystem extends SubsystemBase {
   //   }
 
   public void moveToPosition(double setPoint) {
+    // Cancel Zeroing //
     zeroing = false;
+    // Set Goal //
     this.setPoint = setPoint;
   }
 
-  public boolean hasReachedSetpoint() {
-    return pidController.atSetpoint();
+  public double getCurrent() {
+    return liftMotor
+        .getStatorCurrent()
+        .getValueAsDouble(); // TODO: CHECK IF THIS IS MOTOR CURRENT //
   }
 
   public double getPosition() {
@@ -128,10 +148,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public double getSetpoint() {
     return setPoint;
-  }
-
-  public double getCurrent() {
-    return liftMotor.getOutputCurrent();
   }
 
   public void flipMotor() {
@@ -144,5 +160,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void moveDown() {
     setPoint += manualDifference;
+  }
+
+  public boolean hasReachedSetpoint() {
+    return pidController.atSetpoint();
   }
 }

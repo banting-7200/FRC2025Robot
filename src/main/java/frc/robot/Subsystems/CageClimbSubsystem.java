@@ -64,16 +64,16 @@ public class CageClimbSubsystem {
   }
 
   public void run() {
-    if (getBottomLimitSwitch()) {
-      setPositionToZero();
-      falcon500.setControl(dutyCycleMotorRequest.withOutput(0));
-      falcon500.setControl(positionMotorRequest.withPosition(setpoint).withSlot(0));
-      hasBeenZeroed = true;
-    }
-    if (hasBeenZeroed) {
-      falcon500.setControl(positionMotorRequest.withPosition(setpoint).withSlot(0));
-    } else {
-      falcon500.setControl(dutyCycleMotorRequest.withOutput(-0.4));
-    }
+    // if (getBottomLimitSwitch()) {
+    //   setPositionToZero();
+    //   falcon500.setControl(dutyCycleMotorRequest.withOutput(0));
+    //   falcon500.setControl(positionMotorRequest.withPosition(setpoint).withSlot(0));
+    //   hasBeenZeroed = true;
+    // }
+    // if (hasBeenZeroed) {
+    //   falcon500.setControl(positionMotorRequest.withPosition(setpoint).withSlot(0));
+    // } else {
+    //   falcon500.setControl(dutyCycleMotorRequest.withOutput(-0.4));
+    // }
   }
 }

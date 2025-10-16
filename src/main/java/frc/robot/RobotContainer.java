@@ -197,7 +197,7 @@ public class RobotContainer {
                 new MoveElevator(elevator, Elevator.Positions.processor)
                     .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.processor))
                     .schedule());
-    
+
     elevatorProcessor.rising().ifHigh(() -> atProcessorHeight = true);
 
     BooleanEvent elevatorAlgaeOne = buttonBox.button(Control.ButtonBox.algaeLevel1, loop);
@@ -265,10 +265,10 @@ public class RobotContainer {
     loop.poll();
     elevator.run();
     cageArm.run();
-    if (limelight.tagCount() >= 1) {
-      double orientation = drivebase.getYaw().getDegrees() + (isRedAlliance() ? 180 : 0);
-      drivebase.addVisionMeasurement(limelight.getBotPose(orientation));
-    }
+    // if (limelight.tagCount() >= 1) {
+    //   double orientation = drivebase.getYaw().getDegrees() + (isRedAlliance() ? 180 : 0);
+    //   drivebase.addVisionMeasurement(limelight.getBotPose(orientation));
+    // }
   }
 
   public void robotPeriodic() {
