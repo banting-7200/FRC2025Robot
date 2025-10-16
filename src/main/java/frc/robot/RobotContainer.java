@@ -140,13 +140,7 @@ public class RobotContainer {
     // Output/Shoot Algae
     BooleanEvent outputAlgae = mainController.button(Control.Main.output, loop);
 
-    outputAlgae
-        .rising()
-        .ifHigh(
-            () ->
-                new OutputAlgaeCommand(algaeController)
-                    .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.up))
-                    .schedule());
+    outputAlgae.rising().ifHigh(() -> new OutputAlgaeCommand(algaeController).schedule());
 
     Trigger autoAlignToAlgae = new Trigger(() -> mainController.getRightTriggerAxis() > 0.5);
     autoAlignToAlgae.whileTrue(
@@ -192,11 +186,7 @@ public class RobotContainer {
     BooleanEvent elevatorProcessor = buttonBox.button(Control.ButtonBox.processorLevel, loop);
     elevatorProcessor
         .rising()
-        .ifHigh(
-            () ->
-                new MoveElevator(elevator, Elevator.Positions.processor)
-                    .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.processor))
-                    .schedule());
+        .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.processor).schedule());
 
     elevatorProcessor.rising().ifHigh(() -> atProcessorHeight = true);
 
@@ -218,11 +208,7 @@ public class RobotContainer {
     BooleanEvent elevatorAlgaeNet = buttonBox.button(Control.ButtonBox.algaeNet, loop);
     elevatorAlgaeNet
         .rising()
-        .ifHigh(
-            () ->
-                new MoveElevator(elevator, Elevator.Positions.top)
-                    .alongWith(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.shoot))
-                    .schedule());
+        .ifHigh(() -> new MoveElevator(elevator, Elevator.Positions.top).schedule());
 
     elevatorAlgaeNet.rising().ifHigh(() -> atProcessorHeight = false);
 
@@ -245,7 +231,7 @@ public class RobotContainer {
     // Bindings Methods //
     elevatorConfigBindings();
     coralConfigBindings();
-    algaeConfigBindings();
+    // algaeConfigBindings();
     cageConfigBindings();
     swerveConfigBindings();
 
