@@ -2,6 +2,7 @@
 package frc.robot.Subsystems;
 
 // Imports //
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -97,7 +98,7 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
   public void run() {
     // System.out.println("trying to move to " + setpoint + " | Current position = " +
     // getPosition());
-    //  pidController.setReference(setpoint, ControlType.kPosition);
+    pidController.setReference(setpoint, ControlType.kPosition);
   }
 
   public boolean hasAlgae() {
@@ -133,7 +134,7 @@ public class AlgaeIntakeSubsystem extends SubsystemBase {
   // Intake Motor
 
   private void spinIntake(double speed) {
-    // intakeMotor.set(speed);
+    intakeMotor.set(speed);
   }
 
   public void intake() {
