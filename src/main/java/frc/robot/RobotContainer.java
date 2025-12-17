@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AlgaeCommands.IntakeAlgaeCommand;
 import frc.robot.Commands.AlgaeCommands.MoveAlgaeArm;
 import frc.robot.Commands.AlgaeCommands.OutputAlgaeCommand;
-import frc.robot.Commands.DriveCommands.AlgaeObjectAlign;
 import frc.robot.Commands.ElevatorCommands.MoveElevator;
 import frc.robot.Commands.RumbleCommand;
 import frc.robot.Constants.*;
@@ -148,10 +147,10 @@ public class RobotContainer {
                     .andThen(new MoveAlgaeArm(algaeController, AlgaeSystem.Positions.up))
                     .schedule());
 
-    Trigger autoAlignToAlgae = new Trigger(() -> mainController.getRightTriggerAxis() > 0.5);
-    autoAlignToAlgae.whileTrue(
-        new AlgaeObjectAlign(
-            drivebase, photonCam, joystickSquared, joystickSquared, algaeController));
+    // Trigger autoAlignToAlgae = new Trigger(() -> mainController.getRightTriggerAxis() > 0.5);
+    // autoAlignToAlgae.whileTrue(
+    //     new AlgaeObjectAlign(
+    //         drivebase, photonCam, joystickSquared, joystickSquared, algaeController));
   }
 
   public void swerveConfigBindings() {

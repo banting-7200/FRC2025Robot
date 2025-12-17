@@ -60,7 +60,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void run() {
-    System.out.println("Elevator Position: " + getPosition());
+    // System.out.println("Elevator Position: " + getPosition());
     // When Limit Switch is hit //
     if (bottomLimitSwitchPressed()) { // When Done Zeroing //
       // Zero && Stop Motor //

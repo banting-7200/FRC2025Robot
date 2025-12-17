@@ -72,13 +72,13 @@ public final class Constants {
     }
 
     public final class PID {
-      public static final double P = 0.01;
+      public static final double P = 0.008;
       public static final double I = 0;
-      public static final double D = 0.002;
+      public static final double D = 0.003;
     }
 
     public final class Positions {
-      public static final double up = 31.9;
+      public static final double up = 34;
       public static final double down = 99.3;
       public static final double shoot = 45;
       public static final double processor = 75;
